@@ -1,0 +1,23 @@
+declare "run" {
+  argument "loki_receiver" {}
+  local.file_match "agentcisapp_superadmin" {
+    path_targets = [
+      { "__path__" = "/var/log/nfs/agentcisapp-superadmin/superadmin-api/**/*.log" },
+    ]
+    sync_period = "10s"
+  }
+  loki.source.file "agentcisapp_superadmin" {
+    targets       = local.file_match.agentcisapp_superadmin.targets
+    forward_to    = [loki.process.agentcisapp_superadmin.receiver]
+    tail_from_end = false
+  }
+  loki.process "agentcisapp_superadmin" {
+    stage.static_labels {
+      values = {
+        job       = "kubernetes-pods",
+        namespace = "agentcisapp-superadmin",
+      }
+    }
+    forward_to = [argument.loki_receiver.value]
+  }
+}

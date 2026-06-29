@@ -1,0 +1,83 @@
+controller:
+  type: deployment
+  volumes:
+    extra:
+      - name: nfs-logs
+        nfs:
+          server: nfs.agentcis-staging.internal
+          path: /nfs-staging/pods-storage
+      - name: alloy-extra-configs
+        configMap:
+          name: alloy-extra-configs
+
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+
+alloy:
+  clustering:
+    enabled: false
+
+  mounts:
+    extra:
+      - name: nfs-logs
+        mountPath: /var/log/nfs
+        readOnly: true
+      - name: alloy-extra-configs
+        mountPath: /etc/alloy/extra
+        readOnly: true
+
+  configMap:
+    content: |
+      logging {
+        level  = "info"
+        format = "json"
+      }
+
+      import.file "agentcis_v2"            { filename = "/etc/alloy/extra/agentcis-v2.alloy" }
+      import.file "queue_consumer"         { filename = "/etc/alloy/extra/agentcisapp-queue-consumer.alloy" }
+      import.file "superadmin"             { filename = "/etc/alloy/extra/agentcisapp-superadmin.alloy" }
+      import.file "web_server"             { filename = "/etc/alloy/extra/agentcisapp-web-server.alloy" }
+      import.file "agent_portal"           { filename = "/etc/alloy/extra/microservice-agent-portal.alloy" }
+      import.file "authentication"         { filename = "/etc/alloy/extra/microservice-authentication.alloy" }
+      import.file "data_import"            { filename = "/etc/alloy/extra/microservice-data-import.alloy" }
+      import.file "email_summary"          { filename = "/etc/alloy/extra/microservice-email-summary.alloy" }
+      import.file "onboarding"             { filename = "/etc/alloy/extra/microservice-onboarding.alloy" }
+      import.file "report_scheduler"       { filename = "/etc/alloy/extra/microservice-report-scheduler.alloy" }
+      import.file "sms_campaign"           { filename = "/etc/alloy/extra/microservice-sms-campaign.alloy" }
+      import.file "sub_agent_portal"       { filename = "/etc/alloy/extra/microservice-sub-agent-portal.alloy" }
+      import.file "php_web_labels"         { filename = "/etc/alloy/extra/z-dynamic-label-php-web-agentcis.alloy" }
+      import.file "php_queue_labels"       { filename = "/etc/alloy/extra/z-dynamic-label-php-queue-consumer.alloy" }
+
+      // ── labelers instantiated first so their receivers exist ──
+      php_web_labels.run "default"         { loki_receiver = loki.write.local_loki.receiver }
+      php_queue_labels.run "default"       { loki_receiver = loki.write.local_loki.receiver }
+
+      // ── scrapers that go through a labeler ──
+      web_server.run "default"             { loki_receiver = php_web_labels.run.default.receiver }
+      queue_consumer.run "default"         { loki_receiver = php_queue_labels.run.default.receiver }
+
+      // ── scrapers that send directly to loki ──
+      agentcis_v2.run "default"            { loki_receiver = loki.write.local_loki.receiver }
+      superadmin.run "default"             { loki_receiver = loki.write.local_loki.receiver }
+      agent_portal.run "default"           { loki_receiver = loki.write.local_loki.receiver }
+      authentication.run "default"         { loki_receiver = loki.write.local_loki.receiver }
+      data_import.run "default"            { loki_receiver = loki.write.local_loki.receiver }
+      email_summary.run "default"          { loki_receiver = loki.write.local_loki.receiver }
+      onboarding.run "default"             { loki_receiver = loki.write.local_loki.receiver }
+      report_scheduler.run "default"       { loki_receiver = loki.write.local_loki.receiver }
+      sms_campaign.run "default"           { loki_receiver = loki.write.local_loki.receiver }
+      sub_agent_portal.run "default"       { loki_receiver = loki.write.local_loki.receiver }
+
+      loki.write "local_loki" {
+        endpoint {
+          url            = "http://agentcis:agentcis523@172.34.26.95:8081/loki/api/v1/push"
+          remote_timeout = "30s"
+        }
+        external_labels = {
+          environment = "infra",
+          log_source  = "nfs",
+        }
+      }

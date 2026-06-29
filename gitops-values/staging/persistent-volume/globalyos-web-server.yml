@@ -1,0 +1,10 @@
+#namespace: agentcisapp-web-server #### for future reference
+storage:
+  Name: "globalyos-web-server"
+  size: 20Gi
+  accessModes:
+    - ReadWriteMany
+
+  nfs:
+    host: nfs.agentcis-staging.internal
+    path: /nfs-staging/pods-storage/globalyos-web-server

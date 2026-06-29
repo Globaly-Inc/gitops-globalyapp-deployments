@@ -1,0 +1,34 @@
+### agentcisapp-queue-consumer ###########
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pv-globalyos-web-server
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background     
+spec:
+  project: default
+  sources:
+  - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
+    targetRevision: "live-values"
+    ref: values    
+  - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
+    targetRevision: "infra"          # branch to deploy
+    path: "helm-charts/self-managed/persistent-volume" # path to the Helm chart
+    helm:
+      valueFiles:
+        - $values/gitops-values/staging/persistent-volume/globalyos-web-server.yml    
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: globalyos-web-server
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - ServerSideApply=true
+      - PruneLast=true 
+      - PrunePropagationPolicy=foreground

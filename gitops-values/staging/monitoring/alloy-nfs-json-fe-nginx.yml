@@ -1,0 +1,319 @@
+controller:
+  type: deployment
+  volumes:
+    extra:
+      - name: nfs-logs
+        nfs:
+          server: nfs.agentcis-staging.internal
+          path: /nfs-staging/pods-storage
+
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+
+alloy:
+  clustering:
+    enabled: false
+
+  mounts:
+    extra:
+      - name: nfs-logs
+        mountPath: /var/log/nfs
+        readOnly: true
+
+  configMap:
+    content: |
+      logging {
+        level  = "info"
+        format = "json"
+      }
+
+      // ─────────────────────────────────────────
+      // agentcis-v2
+      // ─────────────────────────────────────────
+      local.file_match "agentcis_v2" {
+        path_targets = [
+          { "__path__" = "/var/log/nfs/agentcis-v2/agentcis-v2-crm-frontend/**/*.log" },
+        ]
+        sync_period = "10s"
+      }
+      loki.source.file "agentcis_v2" {
+        targets       = local.file_match.agentcis_v2.targets
+        forward_to    = [loki.process.agentcis_v2.receiver]
+        tail_from_end = false
+      }
+      loki.process "agentcis_v2" {
+        stage.static_labels {
+          values = {
+            job       = "kubernetes-pods",
+            namespace = "agentcis-v2",
+          }
+        }
+        forward_to = [loki.process.common_nginx_labels.receiver]
+      }
+
+      // ─────────────────────────────────────────
+      // agentcisapp-web-server
+      // ─────────────────────────────────────────
+      local.file_match "agentcisapp_web_server" {
+        path_targets = [
+          { "__path__" = "/var/log/nfs/agentcisapp-web-server/notification-broadcast-api/**/nginx.*.log" },
+          { "__path__" = "/var/log/nfs/agentcisapp-web-server/notification-socket-api/**/nginx.*.log" },
+          { "__path__" = "/var/log/nfs/agentcisapp-web-server/registration-api/**/nginx.*.log" },
+          { "__path__" = "/var/log/nfs/agentcisapp-web-server/web-server-parent-api/**/nginx.*.log" },
+          { "__path__" = "/var/log/nfs/agentcisapp-web-server/webhook-api/**/nginx.*.log" },
+        ]
+        sync_period = "10s"
+      }
+      loki.source.file "agentcisapp_web_server" {
+        targets       = local.file_match.agentcisapp_web_server.targets
+        forward_to    = [loki.process.agentcisapp_web_server.receiver]
+        tail_from_end = false
+      }
+      loki.process "agentcisapp_web_server" {
+        stage.static_labels {
+          values = {
+            job       = "kubernetes-pods",
+            namespace = "agentcisapp-web-server",
+          }
+        }
+        forward_to = [loki.process.common_nginx_labels.receiver]
+      }
+            
+      // ─────────────────────────────────────────
+      // agentcisapp-superadmin
+      // ─────────────────────────────────────────
+      local.file_match "agentcisapp_superadmin" {
+        path_targets = [
+          { "__path__" = "/var/log/nfs/agentcisapp-superadmin/superadmin-frontend/**/*.log" },
+        ]
+        sync_period = "10s"
+      }
+      loki.source.file "agentcisapp_superadmin" {
+        targets       = local.file_match.agentcisapp_superadmin.targets
+        forward_to    = [loki.process.agentcisapp_superadmin.receiver]
+        tail_from_end = false
+      }
+      loki.process "agentcisapp_superadmin" {
+        stage.static_labels {
+          values = {
+            job       = "kubernetes-pods",
+            namespace = "agentcisapp-superadmin",
+          }
+        }
+        forward_to = [loki.process.common_nginx_labels.receiver]
+      }
+
+      // ─────────────────────────────────────────
+      // microservice-agent-portal
+      // ─────────────────────────────────────────
+      local.file_match "microservice_agent_portal" {
+        path_targets = [
+          { "__path__" = "/var/log/nfs/microservice-agent-portal/agent-portal-frontend/**/*.log" },
+        ]
+        sync_period = "10s"
+      }
+      loki.source.file "microservice_agent_portal" {
+        targets       = local.file_match.microservice_agent_portal.targets
+        forward_to    = [loki.process.microservice_agent_portal.receiver]
+        tail_from_end = false
+      }
+      loki.process "microservice_agent_portal" {
+        stage.static_labels {
+          values = {
+            job       = "kubernetes-pods",
+            namespace = "microservice-agent-portal",
+          }
+        }
+        forward_to = [loki.process.common_nginx_labels.receiver]
+      }
+
+      // ─────────────────────────────────────────
+      // microservice-data-import
+      // ─────────────────────────────────────────
+      local.file_match "microservice_data_import" {
+        path_targets = [
+          { "__path__" = "/var/log/nfs/microservice-data-import/fe-data-import/**/*.log" },
+        ]
+        sync_period = "10s"
+      }
+      loki.source.file "microservice_data_import" {
+        targets       = local.file_match.microservice_data_import.targets
+        forward_to    = [loki.process.microservice_data_import.receiver]
+        tail_from_end = false
+      }
+      loki.process "microservice_data_import" {
+        stage.static_labels {
+          values = {
+            job       = "kubernetes-pods",
+            namespace = "microservice-data-import",
+          }
+        }
+        forward_to = [loki.process.common_nginx_labels.receiver]
+      }
+
+      // ─────────────────────────────────────────
+      // microservice-email-summary
+      // ─────────────────────────────────────────
+      local.file_match "microservice_email_summary" {
+        path_targets = [
+          { "__path__" = "/var/log/nfs/microservice-email-summary/fe-email-summary/**/*.log" },
+        ]
+        sync_period = "10s"
+      }
+      loki.source.file "microservice_email_summary" {
+        targets       = local.file_match.microservice_email_summary.targets
+        forward_to    = [loki.process.microservice_email_summary.receiver]
+        tail_from_end = false
+      }
+      loki.process "microservice_email_summary" {
+        stage.static_labels {
+          values = {
+            job       = "kubernetes-pods",
+            namespace = "microservice-email-summary",
+          }
+        }
+        forward_to = [loki.process.common_nginx_labels.receiver]
+      }
+
+      // ─────────────────────────────────────────
+      // microservice-onboarding
+      // ─────────────────────────────────────────
+      local.file_match "microservice_onboarding" {
+        path_targets = [
+          { "__path__" = "/var/log/nfs/microservice-onboarding/fe-onboarding/**/*.log" },
+        ]
+        sync_period = "10s"
+      }
+      loki.source.file "microservice_onboarding" {
+        targets       = local.file_match.microservice_onboarding.targets
+        forward_to    = [loki.process.microservice_onboarding.receiver]
+        tail_from_end = false
+      }
+      loki.process "microservice_onboarding" {
+        stage.static_labels {
+          values = {
+            job       = "kubernetes-pods",
+            namespace = "microservice-onboarding",
+          }
+        }
+        forward_to = [loki.process.common_nginx_labels.receiver]
+      }
+
+      // ─────────────────────────────────────────
+      // microservice-report-scheduler
+      // ─────────────────────────────────────────
+      local.file_match "microservice_report_scheduler" {
+        path_targets = [
+          { "__path__" = "/var/log/nfs/microservice-report-scheduler/fe-report-scheduler/**/*.log" },
+        ]
+        sync_period = "10s"
+      }
+      loki.source.file "microservice_report_scheduler" {
+        targets       = local.file_match.microservice_report_scheduler.targets
+        forward_to    = [loki.process.microservice_report_scheduler.receiver]
+        tail_from_end = false
+      }
+      loki.process "microservice_report_scheduler" {
+        stage.static_labels {
+          values = {
+            job       = "kubernetes-pods",
+            namespace = "microservice-report-scheduler",
+          }
+        }
+        forward_to = [loki.process.common_nginx_labels.receiver]
+      }
+
+      // ─────────────────────────────────────────
+      // microservice-sms-campaign
+      // ─────────────────────────────────────────
+      local.file_match "microservice_sms_campaign" {
+        path_targets = [
+          { "__path__" = "/var/log/nfs/microservice-sms-campaign/fe-sms-campaign/**/*.log" },
+        ]
+        sync_period = "10s"
+      }
+      loki.source.file "microservice_sms_campaign" {
+        targets       = local.file_match.microservice_sms_campaign.targets
+        forward_to    = [loki.process.microservice_sms_campaign.receiver]
+        tail_from_end = false
+      }
+      loki.process "microservice_sms_campaign" {
+        stage.static_labels {
+          values = {
+            job       = "kubernetes-pods",
+            namespace = "microservice-sms-campaign",
+          }
+        }
+        forward_to = [loki.process.common_nginx_labels.receiver]
+      }
+
+      // ─────────────────────────────────────────
+      // microservice-sub-agent-portal
+      // ─────────────────────────────────────────
+      local.file_match "microservice_sub_agent_portal" {
+        path_targets = [
+          { "__path__" = "/var/log/nfs/microservice-sub-agent-portal/fe-sub-agent-control/**/*.log" },
+        ]
+        sync_period = "10s"
+      }
+      loki.source.file "microservice_sub_agent_portal" {
+        targets       = local.file_match.microservice_sub_agent_portal.targets
+        forward_to    = [loki.process.microservice_sub_agent_portal.receiver]
+        tail_from_end = false
+      }
+      loki.process "microservice_sub_agent_portal" {
+        stage.static_labels {
+          values = {
+            job       = "kubernetes-pods",
+            namespace = "microservice-sub-agent-portal",
+          }
+        }
+        forward_to = [loki.process.common_nginx_labels.receiver]
+      }
+
+      // ─────────────────────────────────────────
+      // SHARED: Dynamic nginx label extraction
+      // (all frontend namespaces funnel here)
+      // ─────────────────────────────────────────
+      loki.process "common_nginx_labels" {
+        stage.json {
+          expressions = {
+            nginx_http_host = "http_host",
+            nginx_status    = "status",
+            request_method  = "request_method",
+            country         = "ip_client_country",
+            city            = "ip_client_city",
+            longitude       = "ip_longitude",
+            latitude        = "ip_latitude",
+          }
+        }
+        stage.labels {
+          values = {
+            domain      = "nginx_http_host",
+            status_code = "nginx_status",
+            request_method = "request_method",
+            country     = "country",
+            city        = "city",
+            longitude   = "longitude",
+            latitude    = "latitude",
+          }
+        }
+        forward_to = [loki.write.local_loki.receiver]
+      }
+
+      // ─────────────────────────────────────────
+      // SHARED: Send to Loki
+      // ─────────────────────────────────────────
+      loki.write "local_loki" {
+        endpoint {
+          url            = "http://agentcis:agentcis523@172.34.26.95:8081/loki/api/v1/push"
+          remote_timeout = "30s"
+        }
+        external_labels = {
+          environment     = "infra",
+          log_source = "nfs",
+        }
+      }

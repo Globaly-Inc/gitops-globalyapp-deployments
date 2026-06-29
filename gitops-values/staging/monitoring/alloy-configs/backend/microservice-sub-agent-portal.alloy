@@ -1,0 +1,23 @@
+declare "run" {
+  argument "loki_receiver" {}
+  local.file_match "microservice_sub_agent_portal" {
+    path_targets = [
+      { "__path__" = "/var/log/nfs/microservice-sub-agent-portal/api-sub-agent-portal/**/*.log" },
+    ]
+    sync_period = "10s"
+  }
+  loki.source.file "microservice_sub_agent_portal" {
+    targets       = local.file_match.microservice_sub_agent_portal.targets
+    forward_to    = [loki.process.microservice_sub_agent_portal.receiver]
+    tail_from_end = false
+  }
+  loki.process "microservice_sub_agent_portal" {
+    stage.static_labels {
+      values = {
+        job       = "kubernetes-pods",
+        namespace = "microservice-sub-agent-portal",
+      }
+    }
+    forward_to = [argument.loki_receiver.value]
+  }
+}

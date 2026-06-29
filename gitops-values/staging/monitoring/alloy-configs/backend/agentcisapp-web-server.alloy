@@ -1,0 +1,28 @@
+declare "run" {
+  argument "loki_receiver" {}
+
+  local.file_match "agentcisapp_web_server" {
+    path_targets = [
+      { "__path__" = "/var/log/nfs/agentcisapp-web-server/notification-broadcast-api/**/laravel*.log" },
+      { "__path__" = "/var/log/nfs/agentcisapp-web-server/notification-socket-api/**/laravel*.log" },
+      { "__path__" = "/var/log/nfs/agentcisapp-web-server/registration-api/**/laravel*.log" },
+      { "__path__" = "/var/log/nfs/agentcisapp-web-server/web-server-parent-api/**/laravel*.log" },
+      { "__path__" = "/var/log/nfs/agentcisapp-web-server/webhook-api/**/laravel*.log" },
+    ]
+    sync_period = "10s"
+  }
+  loki.source.file "agentcisapp_web_server" {
+    targets       = local.file_match.agentcisapp_web_server.targets
+    forward_to    = [loki.process.agentcisapp_web_server.receiver]
+    tail_from_end = false
+  }
+  loki.process "agentcisapp_web_server" {
+    stage.static_labels {
+      values = {
+        job       = "kubernetes-pods",
+        namespace = "agentcisapp-web-server",
+      }
+    }
+    forward_to = [argument.loki_receiver.value]
+  }
+}

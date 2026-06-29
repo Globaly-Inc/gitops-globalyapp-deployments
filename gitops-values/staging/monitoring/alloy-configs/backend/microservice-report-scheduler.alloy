@@ -1,0 +1,23 @@
+declare "run" {
+  argument "loki_receiver" {}
+  local.file_match "microservice_report_scheduler" {
+    path_targets = [
+      { "__path__" = "/var/log/nfs/microservice-report-scheduler/api-report-scheduler/**/*.log" },
+    ]
+    sync_period = "10s"
+  }
+  loki.source.file "microservice_report_scheduler" {
+    targets       = local.file_match.microservice_report_scheduler.targets
+    forward_to    = [loki.process.microservice_report_scheduler.receiver]
+    tail_from_end = false
+  }
+  loki.process "microservice_report_scheduler" {
+    stage.static_labels {
+      values = {
+        job       = "kubernetes-pods",
+        namespace = "microservice-report-scheduler",
+      }
+    }
+    forward_to = [argument.loki_receiver.value]
+  }
+}

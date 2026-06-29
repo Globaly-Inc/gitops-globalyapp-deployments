@@ -1,0 +1,54 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: globalyos-kubernetes-schedular-recovery
+  namespace: argocd
+spec:
+  schedule: "*/7 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 300
+      template:
+        spec:
+          serviceAccountName: argocd-application-controller
+          restartPolicy: OnFailure
+          containers:
+            - name: cleanup
+              image: bitnami/kubectl:latest
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "Cleaning error pods..."
+                  kubectl get pods -A --no-headers \
+                    | grep -E 'BackOff|Error|Evicted|Unknown|Completed|Terminating' \
+                    | awk '{print "-n", $1, $2}' \
+                    | xargs -P 10 -L 1 kubectl delete pod --grace-period=0 --force --ignore-not-found=true
+                  echo "Done"               
+
+                  echo "Deleting the aws-elb webhooks"
+                  kubectl delete mutatingwebhookconfiguration aws-load-balancer-webhook
+                  kubectl delete validatingwebhookconfiguration aws-load-balancer-webhook
+
+                  if kubectl logs -n kube-system deployments/aws-load-balancer-controller | grep -qi "failed calling webhook|failed to verify certificate"; then
+                    echo "Errors found! Restarting aws-load-balancer-controller..."
+                    kubectl rollout restart -n kube-system deployment/aws-load-balancer-controller
+                    kubectl rollout status -n kube-system deployment/aws-load-balancer-controller
+                  else
+                    echo "No errors found. Skipping restart."
+                  fi                  
+
+                  ########## emergency target group fixing
+                  ##### removing #######
+                  # kubectl get targetgroupbindings.elbv2.k8s.aws -A --no-headers \
+                  #   | awk '{print "-n", $1, $2}' \
+                  #   | xargs -P 10 -L 1 kubectl delete targetgroupbinding.elbv2.k8s.aws     
+
+                  #### restarting for creation
+                  # kubectl rollout restart -n kube-system deployment/aws-load-balancer-controller
+                  # kubectl rollout status -n kube-system deployment/aws-load-balancer-controller
+                  # kubectl logs -n kube-system deployments/aws-load-balancer-controller -f
+

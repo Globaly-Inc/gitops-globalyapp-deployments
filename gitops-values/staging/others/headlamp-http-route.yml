@@ -1,0 +1,35 @@
+microservice:
+  name: headlamp #ecact name of service
+  service:
+    svcport: 80
+    type: NodePort
+  httproute:
+    enabled: true
+    urlRewriteEnabled: false
+    gateway:
+      name: "microservice-stage-alb-gateway"               
+      namespace: "gateways-globalyos"  
+      sectionName: "https"       
+    customHostname:
+      enabled: true
+      hosts:
+        - "headlamp.microservice.agentcis.com"
+    httpMultipleRoute:
+      paths:
+        - "/"  
+  targetGroupConfiguration:
+    enabled: true
+    targetType: "instance"
+    nodeSelector:
+      enabled: true
+      labelName: type
+      labelValue: default-server-worker     
+    healthCheckPath: "/"
+    healthCheckProtocol: "HTTP"
+    healthCheckPort: "80"
+    healthCheckInterval: 30
+    healthCheckTimeout: 4      # ← ADD THIS LINE
+    healthyThresholdCount: 2
+    unhealthyThresholdCount: 2
+    matcher:
+      httpCode: "200-399,401-404"        

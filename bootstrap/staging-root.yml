@@ -1,0 +1,77 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: 010-globalyos-stage-pre-setup-010
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  project: default
+  # Use "sources" (plural) instead of "source"
+  sources:
+  - repoURL: "https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git"
+    path: "apps/staging/pre-apps"
+    targetRevision: "live-values"
+    directory:
+      recurse: true
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: -1            # ← unlimited retries
+      backoff:
+        duration: 30s      # ← base interval of 30 seconds
+        factor: 2
+        maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: 111-globalos-stage-application-111
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  project: default
+  # Use "sources" (plural) instead of "source"
+  sources:
+  - repoURL: "https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git"
+    path: "apps/staging/application"
+    targetRevision: "live-values"
+    directory:
+      recurse: true
+  - repoURL: "https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git"
+    path: "apps/staging/public-traffic/"
+    targetRevision: "live-values"
+    directory:
+      recurse: true
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: -1            # ← unlimited retries
+      backoff:
+        duration: 30s      # ← base interval of 30 seconds
+        factor: 2
+        maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain

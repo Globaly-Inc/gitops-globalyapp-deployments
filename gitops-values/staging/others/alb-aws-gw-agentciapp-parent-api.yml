@@ -1,0 +1,18 @@
+gateway:
+  https_mode:
+    enabled: true
+    k8s_api_gateway:
+      name: globalyos-stage ## ##### -gateway (chart ma automatic add gareko xu)
+      gatewayClassName: aws-alb-gateway-class
+      listener_http_namespaces: "All"      # Shared for both HTTP/HTTPS
+      listener_https_namespaces: "All"     # separate HTTPS value
+    aws_alb_config:
+      name: globalyos-stage ##### -alb-lbconfig (chart ma automatic add gareko xu)
+      scheme: internet-facing
+      ipAddressType: ipv4
+      defaultCertificate: "arn:aws:acm:ap-southeast-2:834033184010:certificate/b39f92e0-a65b-4510-871b-9747f98642aa"
+      #defaultCertificate: "arn:aws:acm:ap-southeast-2:834033184010:certificate/8ed04012-763d-4e2c-8293-79291929e00a" ##staging
+      #defaultCertificate: "arn:aws:acm:ap-southeast-2:834033184010:certificate/4cbfc17a-e454-4533-b25b-b9ad154d0497" ## testcrm
+      #defaultCertificate: "arn:aws:acm:ap-southeast-2:834033184010:certificate/e660401c-748c-49c8-9e12-227732615cd2" ## dev
+      
+      

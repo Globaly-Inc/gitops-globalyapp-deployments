@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: globalyos-wait-for-aws-controller
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "0"  # Installing crd before aws elb install    
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  ttlSecondsAfterFinished: 60
+  template:
+    spec:
+      serviceAccountName: argocd-application-controller
+      containers:
+      - name: wait
+        image: bitnami/kubectl:latest
+        command:
+        - sh
+        - -c
+        - |
+          echo "Waiting for aws-load-balancer-controller to be Healthy..."
+          until kubectl get app aws-load-balancer-controller -n argocd -o jsonpath='{.status.health.status}' | grep -q "Healthy"; do
+            echo "Still waiting..."
+            sleep 10
+          done
+          echo "✅ aws-load-balancer-controller is Healthy!"
+      restartPolicy: Never
+  backoffLimit: 30

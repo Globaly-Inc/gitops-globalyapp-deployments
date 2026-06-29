@@ -1,0 +1,10 @@
+#namespace: agentcis-v2 #### for future reference
+storage:
+  Name: "globalyos-consumer"
+  size: 20Gi
+  accessModes:
+    - ReadWriteMany
+
+  nfs:
+    host: nfs.agentcis-staging.internal
+    path: /nfs-staging/pods-storage/globalyos-consumer

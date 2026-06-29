@@ -1,0 +1,35 @@
+declare "run" {
+  argument "loki_receiver" {}
+
+  local.file_match "agentcisapp_queue_consumer" {
+    path_targets = [
+      { "__path__" = "/var/log/nfs/agentcisapp-queue-consumer/consumer-analytics/**/*.log" },
+      { "__path__" = "/var/log/nfs/agentcisapp-queue-consumer/consumer-automation/**/*.log" },
+      { "__path__" = "/var/log/nfs/agentcisapp-queue-consumer/consumer-campaign/**/*.log" },
+      { "__path__" = "/var/log/nfs/agentcisapp-queue-consumer/consumer-crm/**/*.log" },
+      { "__path__" = "/var/log/nfs/agentcisapp-queue-consumer/consumer-default/**/*.log" },
+      { "__path__" = "/var/log/nfs/agentcisapp-queue-consumer/consumer-inbound/**/*.log" },
+      { "__path__" = "/var/log/nfs/agentcisapp-queue-consumer/consumer-outbound/**/*.log" },
+      { "__path__" = "/var/log/nfs/agentcisapp-queue-consumer/consumer-partner/**/*.log" },
+      { "__path__" = "/var/log/nfs/agentcisapp-queue-consumer/consumer-report/**/*.log" },
+      { "__path__" = "/var/log/nfs/agentcisapp-queue-consumer/cron-schedular/**/*.log" },
+    ]
+    sync_period = "10s"
+  }
+
+  loki.source.file "agentcisapp_queue_consumer" {
+    targets       = local.file_match.agentcisapp_queue_consumer.targets
+    forward_to    = [loki.process.agentcisapp_queue_consumer.receiver]
+    tail_from_end = false
+  }
+
+  loki.process "agentcisapp_queue_consumer" {
+    stage.static_labels {
+      values = {
+        job       = "kubernetes-pods",
+        namespace = "agentcisapp-queue-consumer",
+      }
+    }
+    forward_to = [argument.loki_receiver.value]   // ← sends to labeler, not directly to loki
+  }
+}

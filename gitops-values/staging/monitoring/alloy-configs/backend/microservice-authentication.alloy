@@ -1,0 +1,23 @@
+declare "run" {
+  argument "loki_receiver" {}
+  local.file_match "microservice_authentication" {
+    path_targets = [
+      { "__path__" = "/var/log/nfs/microservice-authentication/authentication-api/**/*.log" },
+    ]
+    sync_period = "10s"
+  }
+  loki.source.file "microservice_authentication" {
+    targets       = local.file_match.microservice_authentication.targets
+    forward_to    = [loki.process.microservice_authentication.receiver]
+    tail_from_end = false
+  }
+  loki.process "microservice_authentication" {
+    stage.static_labels {
+      values = {
+        job       = "kubernetes-pods",
+        namespace = "microservice-authentication",
+      }
+    }
+    forward_to = [argument.loki_receiver.value]
+  }
+}
