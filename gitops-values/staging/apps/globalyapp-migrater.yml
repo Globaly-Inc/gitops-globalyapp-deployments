@@ -27,7 +27,7 @@ backend:
 
   workdir:
     enabled: true
-    path: /globalyos/migrater/
+    path: /globalyapp/migrater/
 
   startupCommand:
     enabled: true
