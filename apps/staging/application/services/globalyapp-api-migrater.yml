@@ -3,7 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: api-migrater-globalyos
+  name: api-migrater-globalyapp
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "-10"  # Installing main backend first
@@ -23,7 +23,7 @@ spec:
         - $values/gitops-values/staging/apps/globalyapp-migrater.yml     
   destination:
     server: https://kubernetes.default.svc
-    namespace: globalyos-web-server
+    namespace: globalyapp-web-server
   syncPolicy:
     automated:
       prune: true
