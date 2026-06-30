@@ -20,7 +20,7 @@ spec:
     targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
-        - $values/gitops-values/staging/apps/api-globalyos-migrater.yml     
+        - $values/gitops-values/staging/apps/globalyapp-migrater.yml     
   destination:
     server: https://kubernetes.default.svc
     namespace: globalyos-web-server

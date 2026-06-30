@@ -3,8 +3,8 @@ frontend:
   replicaCount: 1
 
   image:
-    repository: 834033184010.dkr.ecr.ap-southeast-2.amazonaws.com/globalyos-frontend
-    tag: globalyos-frontend-05-21-00d55cb
+    repository: 834033184010.dkr.ecr.ap-south-1.amazonaws.com/globalyapp-frontend
+    tag: globalyapp-frontend-06-30-382c718
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
