@@ -27,7 +27,7 @@ frontend:
 
   workdir:
     enabled: true
-    path: /globalyos/frontend
+    path: /globalyapp/frontend
 
   startupCommand:
     enabled: true
@@ -44,8 +44,10 @@ frontend:
   resources:
     requests:
       memory: "100Mi"
+      cpu: "100m"
     limits:
-      memory: "100Mi"
+      memory: "300Mi"
+      cpu: "300m"
 
   volumes:
     defaultpvc:
@@ -58,12 +60,17 @@ frontend:
         hostSubPath: "agentcis-v2-crm-frontend/"
 
   affinity:
-    enabled: false
+    enabled: true
+    preventpolicy:
+      enabled: true
+      key: type
+      values:
+        - cache-server-worker
     preferredNodes:
-      - hostname: agentcis-staging-k8s-master-172-34-28-189
-        weight: 100
-      - hostname: other-server
-        weight: 50
+      - weight: 100
+        key: type
+        values:
+          - web-server-worker
 
   multiplePorts:
     enabled: false
@@ -72,7 +79,7 @@ frontend:
         name: grpc
         
   livenessProbe:
-    enabled: false
+    enabled: true
     httpGet:
       path: /nginx-health
       port: 80
@@ -81,7 +88,7 @@ frontend:
     failureThreshold: 3
 
   readinessProbe:
-    enabled: false
+    enabled: true
     httpGet:
       path: /nginx-health
       port: 80
@@ -90,7 +97,7 @@ frontend:
     failureThreshold: 3
 
   startupProbe:
-    enabled: false
+    enabled: true
     httpGet:
       path: /nginx-health
       port: 80
@@ -111,7 +118,7 @@ frontend:
           targetPort: 50051
           
   hpa:
-    enabled: false
+    enabled: true
     minReplicas: 1
     maxReplicas: 3
     cpuUtilization: 50
@@ -121,10 +128,10 @@ frontend:
       podsValue: 1
 
   ingress:
-    enabled: false
-    clusterIssuer: lets-encrypt
+    enabled: true
+    clusterIssuer: lets-encrypt-staging
     className: nginx
-    host: subash.globalyhub.com
+    host: staging.globalyapp.com
     path: /
     
   httproute:
