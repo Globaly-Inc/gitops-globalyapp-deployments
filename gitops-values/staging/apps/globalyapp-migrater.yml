@@ -1,10 +1,10 @@
 backend:
-  name: api-migrater-globaly-os
+  name: api-migrater-globaly-app
   replicaCount: 1
 
   image:
-    repository: 834033184010.dkr.ecr.ap-southeast-2.amazonaws.com/globalyos-migrater
-    tag: globalyos-migrater-05-21-eb776f2
+    repository: 834033184010.dkr.ecr.ap-south-1.amazonaws.com/globalyapp-migrater
+    tag: globalyapp-migrater-06-30-382c718
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
