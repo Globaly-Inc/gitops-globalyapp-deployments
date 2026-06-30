@@ -131,7 +131,7 @@ frontend:
     enabled: true
     clusterIssuer: lets-encrypt-staging
     className: nginx
-    tlsEnabled: true
+    tlsEnabled: false
     host: staging.globalyapp.com
     path: /
     
