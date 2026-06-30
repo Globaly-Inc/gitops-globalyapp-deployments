@@ -54,11 +54,11 @@ spec:
     targetRevision: "live-values"
     directory:
       recurse: true
-  - repoURL: "https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git"
-    path: "apps/staging/public-traffic/"
-    targetRevision: "live-values"
-    directory:
-      recurse: true
+  # - repoURL: "https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git"
+  #   path: "apps/staging/public-traffic/"
+  #   targetRevision: "live-values"
+  #   directory:
+  #     recurse: true
   syncPolicy:
     automated:
       selfHeal: true
