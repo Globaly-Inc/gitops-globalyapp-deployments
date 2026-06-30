@@ -12,7 +12,7 @@ frontend:
     name: ecr-registry-secret
 
   securityContext:
-    enabled: false
+    enabled: true
     runAsUser: 0       # UID the container process runs as
     runAsGroup: 0      # Primary GID of the container process
     supplementalGroupsAndFsGroup:
@@ -131,6 +131,7 @@ frontend:
     enabled: true
     clusterIssuer: lets-encrypt-staging
     className: nginx
+    tlsEnabled: true
     host: staging.globalyapp.com
     path: /
     
