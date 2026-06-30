@@ -1,5 +1,5 @@
 backend:
-  name: api-migrater-globaly-os
+  name: api-migrater-globaly-app
   replicaCount: 1
 
   image:
