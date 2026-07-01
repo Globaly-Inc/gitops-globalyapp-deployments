@@ -3,7 +3,7 @@ frontend:
   replicaCount: 1
 
   image:
-    repository: 834033184010.dkr.ecr.ap-south-1.amazonaws.com/globalyapp-frontend
+    repository: 834033184010.dkr.ecr.ap-south-1.amazonaws.com/production-globalyapp-frontend
     tag: globalyapp-frontend-07-01-33d5b71
     pullPolicy: IfNotPresent
 
@@ -129,10 +129,10 @@ frontend:
 
   ingress:
     enabled: true
-    clusterIssuer: lets-encrypt-staging
+    clusterIssuer: lets-encrypt-production
     className: nginx
     tlsEnabled: false
-    host: staging.globalyapp.com
+    host: production.globalyapp.com
     path: /
     
   httproute:
@@ -144,7 +144,7 @@ frontend:
     customHostname:
       enabled: false
       hosts:
-        - "staging.globalyapp.com"        
+        - "production.globalyapp.com"        
     httpMultipleRoute:
       paths:
         - /
