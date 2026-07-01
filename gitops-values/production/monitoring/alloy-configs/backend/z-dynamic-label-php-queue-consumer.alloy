@@ -1,0 +1,41 @@
+declare "run" {
+  argument "loki_receiver" {}
+
+  loki.process "add_labels_queue_consumer" {
+    stage.json {
+      expressions = {
+        "laravel_status"         = "level",
+        "laravel_log_level"      = "level_name",
+        "laravel_channel"        = "channel",        
+        "context_blob"           = "context",   // grab entire context object
+      }
+    }
+
+    // Stage 2: Parse the extracted context blob to get the dotted key
+    stage.json {
+      source = "context_blob"           // operate on the extracted context object
+      expressions = {
+        "queue_name" = "\"dd.service\"",  // quoted key inside the nested object
+      }
+    }
+        
+    stage.labels {
+      values = {
+        "laravel_log_level"      = "laravel_log_level",
+        "laravel_status"         = "laravel_status",
+        "hostname"               = "laravel_channel",        
+        "queue_name"             = "queue_name",
+      }
+    }
+    stage.static_labels {
+      values = {
+        "techstack" = "laravel-php-8.0",
+      }
+    }
+    forward_to = [argument.loki_receiver.value]
+  }
+
+  export "receiver" {
+    value = loki.process.add_labels_queue_consumer.receiver
+  }
+}

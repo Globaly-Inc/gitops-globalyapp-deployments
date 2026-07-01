@@ -3,7 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: pv-globalyos-web-server
+  name: pv-globalyapp-consumer.yml
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io/background     
@@ -18,10 +18,10 @@ spec:
     path: "helm-charts/self-managed/persistent-volume" # path to the Helm chart
     helm:
       valueFiles:
-        - $values/gitops-values/staging/persistent-volume/globalyos-web-server.yml    
+        - $values/gitops-values/staging/persistent-volume/globalyapp-consumer.yml    
   destination:
     server: https://kubernetes.default.svc
-    namespace: globalyos-web-server
+    namespace: microservice-sub-agent-portal
   syncPolicy:
     automated:
       prune: true

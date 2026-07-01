@@ -1,0 +1,24 @@
+declare "run" {
+  argument "loki_receiver" {}
+  local.file_match "microservice_data_import" {
+    path_targets = [
+      { "__path__" = "/var/log/nfs/microservice-data-import/api-data-import/**/*.log" },
+      { "__path__" = "/var/log/nfs/microservice-data-import/consumer-data-import/**/*.log" },
+    ]
+    sync_period = "10s"
+  }
+  loki.source.file "microservice_data_import" {
+    targets       = local.file_match.microservice_data_import.targets
+    forward_to    = [loki.process.microservice_data_import.receiver]
+    tail_from_end = false
+  }
+  loki.process "microservice_data_import" {
+    stage.static_labels {
+      values = {
+        job       = "kubernetes-pods",
+        namespace = "microservice-data-import",
+      }
+    }
+    forward_to = [argument.loki_receiver.value]
+  }
+}

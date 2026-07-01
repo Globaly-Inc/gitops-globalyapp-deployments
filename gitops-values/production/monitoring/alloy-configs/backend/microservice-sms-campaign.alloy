@@ -1,0 +1,23 @@
+declare "run" {
+  argument "loki_receiver" {}
+  local.file_match "microservice_sms_campaign" {
+    path_targets = [
+      { "__path__" = "/var/log/nfs/microservice-sms-campaign/api-sms-campaign/**/*.log" },
+    ]
+    sync_period = "10s"
+  }
+  loki.source.file "microservice_sms_campaign" {
+    targets       = local.file_match.microservice_sms_campaign.targets
+    forward_to    = [loki.process.microservice_sms_campaign.receiver]
+    tail_from_end = false
+  }
+  loki.process "microservice_sms_campaign" {
+    stage.static_labels {
+      values = {
+        job       = "kubernetes-pods",
+        namespace = "microservice-sms-campaign",
+      }
+    }
+    forward_to = [argument.loki_receiver.value]
+  }
+}

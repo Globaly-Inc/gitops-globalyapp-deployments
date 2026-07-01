@@ -1,0 +1,32 @@
+declare "run" {
+  argument "loki_receiver" {}
+
+  loki.process "add_labels_agentcis_webserver_laravel" {
+    stage.json {
+      expressions = {
+        "laravel_status"         = "level",
+        "laravel_log_level"      = "level_name",
+        "laravel_channel"        = "channel",
+        "laravel_exception_code" = "context_exception_code",
+      }
+    }
+    stage.labels {
+      values = {
+        "laravel_log_level"      = "laravel_log_level",
+        "laravel_status"         = "laravel_status",
+        "hostname"               = "laravel_channel",
+        "laravel_exception_code" = "laravel_exception_code",
+      }
+    }
+    stage.static_labels {
+      values = {
+        "techstack" = "php-8.0",
+      }
+    }
+    forward_to = [argument.loki_receiver.value]
+  }
+
+  export "receiver" {                                              // ← export so scraper can reference it
+    value = loki.process.add_labels_agentcis_webserver_laravel.receiver
+  }
+}

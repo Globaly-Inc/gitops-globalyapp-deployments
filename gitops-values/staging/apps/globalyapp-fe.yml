@@ -1,5 +1,5 @@
 frontend:
-  name: fe-globaly-app
+  name: staging-fe-globaly-app
   replicaCount: 1
 
   image:
@@ -138,13 +138,13 @@ frontend:
   httproute:
     enabled: false
     gateway:
-      name: "globalyos-stage-alb-gateway"
-      namespace: "gateways-globalyos"
+      name: "globalyapp-stage-alb-gateway"
+      namespace: "gateways-globalyapp"
       sectionName: "https"
     customHostname:
       enabled: false
       hosts:
-        - "staging.globalyos.com"        
+        - "staging.globalyapp.com"        
     httpMultipleRoute:
       paths:
         - /

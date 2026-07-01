@@ -3,7 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: staging-fe-globlayapp
+  name: production-fe-globalyapp
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"  # Installing main backend first
@@ -20,10 +20,10 @@ spec:
     targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
-        - $values/gitops-values/staging/apps/globalyapp-fe.yml     
+        - $values/gitops-values/production/apps/globalyapp-fe.yml     
   destination:
     server: https://kubernetes.default.svc
-    namespace: staging-globalyapp-web-server
+    namespace: production-globalyapp-web-server
   syncPolicy:
     automated:
       prune: true

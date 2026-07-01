@@ -30,7 +30,7 @@ pg_dump "postgresql://postgres:YOUR_PASSWORD@db.some-random-secret.supabase.co:5
   --schema=public \
   --no-owner \
   --no-privileges \
-  -f globalyos_dump.sql
+  -f globalyapp_dump.sql
 ```
 
 Variants:
@@ -41,7 +41,7 @@ Variants:
 3. Restore anywhere
 
 ```bash
-psql "postgresql://user:pass@new-host:5432/dbname" -f globalyos_dump.sql
+psql "postgresql://user:pass@new-host:5432/dbname" -f globalyapp_dump.sql
 ```
 
 Easier alternative: Supabase CLI

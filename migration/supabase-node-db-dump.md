@@ -26,7 +26,7 @@ You can restore the same file into any Postgres with `psql -f full.sql`.
 2. Direct `pg_dump` (if you have the DB password from Lovable Cloud → Connect)
 ```bash
 pg_dump "postgresql://postgres:[PASSWORD]@db.some-random-secret.supabase.co:5432/postgres" \
-  --schema=public --no-owner --no-privileges -f globalyos_full.sql
+  --schema=public --no-owner --no-privileges -f globalyapp_full.sql
 ```
 Add `-Fc` for a compressed custom-format dump (smaller, faster restore with `pg_restore`).
 

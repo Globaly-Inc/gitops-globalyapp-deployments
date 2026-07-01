@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: 010-globalyos-stage-pre-setup-010
+  name: 010-globalyapp-stage-pre-setup-010
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io/background

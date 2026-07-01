@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: globalyapp-nfs-directory-create
+  namespace: argocd
+spec:
+  schedule: "*/7 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 300
+      template:
+        spec:
+          restartPolicy: OnFailure
+          securityContext:
+            runAsUser: 1000       # ubuntu user uid on NFS server
+            runAsGroup: 1000      # ubuntu group gid on NFS server
+            fsGroup: 1000         # ensures mounted volume is owned by this group
+          volumes:
+            - name: nfs-volume
+              nfs:
+                server: nfs.agentcis-staging.internal
+                path: /nfs-staging/pods-storage
+          containers:
+            - name: create-dirs
+              image: busybox:latest
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "Creating directories on NFS..."
+                  mkdir -p \
+                    /mnt/nfs/globalyapp-web-server \
+                    /mnt/nfs/globalyapp-consumer
+                  echo "Setting permissions and ownership..."
+                  find /mnt/nfs -maxdepth 2 -type d -exec chmod 777 {} \;
+                  echo "Done. Directory structure:"
+                  ls -la /mnt/nfs/
+              volumeMounts:
+                - name: nfs-volume
+                  mountPath: /mnt/nfs

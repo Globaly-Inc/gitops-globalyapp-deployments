@@ -8,7 +8,7 @@ microservice:
     urlRewriteEnabled: false
     gateway:
       name: "microservice-stage-alb-gateway"               
-      namespace: "gateways-globalyos"  
+      namespace: "gateways-globalyapp"  
       sectionName: "https"       
     customHostname:
       enabled: true

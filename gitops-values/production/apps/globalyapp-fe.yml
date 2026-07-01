@@ -1,10 +1,10 @@
-backend:
-  name: staging-api-migrater-globaly-app
+frontend:
+  name: production-fe-globaly-app
   replicaCount: 1
 
   image:
-    repository: 834033184010.dkr.ecr.ap-south-1.amazonaws.com/globalyapp-migrater
-    tag: globalyapp-migrater-07-01-ef13688
+    repository: 834033184010.dkr.ecr.ap-south-1.amazonaws.com/globalyapp-frontend
+    tag: globalyapp-frontend-07-01-ef13688
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
@@ -19,15 +19,15 @@ backend:
       enabled: false
       supplementalGroups: [4000]
       fsGroup: 2000
-
+      
   tolerations:
     enabled: true                  
     unreachableSeconds: 60         
-    notReadySeconds: 60   
+    notReadySeconds: 60    
 
   workdir:
     enabled: true
-    path: /globalyapp/migrater/
+    path: /globalyapp/frontend
 
   startupCommand:
     enabled: true
@@ -36,51 +36,28 @@ backend:
       echo "-------------------------------"
       echo "k8s => restarting nginx"
       echo "-------------------------------"
+      sudo service nginx start
+      #nginx -g daemon off
       tail -f /dev/null
+      
 
   resources:
     requests:
-      memory: "200Mi"
+      memory: "100Mi"
+      cpu: "100m"
     limits:
-      memory: "1500Mi"
-  multiplePorts:
-    enabled: false
-    ports:
-      - port: 9000
-        name: http
-  livenessProbe:
-    enabled: false
-    httpGet:
-      path: /nginx-health
-      port: 80
-    initialDelaySeconds: 20
-    periodSeconds: 60
-    failureThreshold: 3
-  readinessProbe:
-    enabled: false
-    httpGet:
-      path: /nginx-health
-      port: 80
-    initialDelaySeconds: 15
-    periodSeconds: 60
-    failureThreshold: 3
-  startupProbe:
-    enabled: false
-    httpGet:
-      path: /nginx-health
-      port: 80
-    initialDelaySeconds: 15
-    periodSeconds: 60
-    failureThreshold: 3
+      memory: "300Mi"
+      cpu: "300m"
+
   volumes:
     defaultpvc:
       enabled: false
       volumeName: "logs-storage"
-      pvcName: "pvc-microservice-agent-portal"
-      containerMountPath: "/agent-portal/backend/storage/logs/"
+      pvcName: "pvc-agentcis-v2"
+      containerMountPath: "/var/log/nginx/"
       subPath:
         enabled: false      
-        hostSubPath: "agent-portal-api/"
+        hostSubPath: "agentcis-v2-crm-frontend/"
 
   affinity:
     enabled: true
@@ -95,14 +72,53 @@ backend:
         values:
           - web-server-worker
 
-  service:
+  multiplePorts:
     enabled: false
+    ports:
+      - port: 50051
+        name: grpc
+        
+  livenessProbe:
+    enabled: true
+    httpGet:
+      path: /nginx-health
+      port: 80
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    failureThreshold: 3
+
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: /nginx-health
+      port: 80
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    failureThreshold: 3
+
+  startupProbe:
+    enabled: true
+    httpGet:
+      path: /nginx-health
+      port: 80
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    failureThreshold: 10
+
+  service:
+    enabled: true
     type: NodePort
     containerport: 80
-    svcport: 29000
-
+    svcport: 80    
+    multiplePorts:
+      enabled: false
+      ports:
+        - name: grpc
+          port: 50051
+          targetPort: 50051
+          
   hpa:
-    enabled: false
+    enabled: true
     minReplicas: 1
     maxReplicas: 3
     cpuUtilization: 50
@@ -112,11 +128,13 @@ backend:
       podsValue: 1
 
   ingress:
-    enabled: false
-    clusterIssuer: lets-encrypt
+    enabled: true
+    clusterIssuer: lets-encrypt-staging
     className: nginx
-    host: subash.globalyhub.com
+    tlsEnabled: false
+    host: staging.globalyapp.com
     path: /
+    
   httproute:
     enabled: false
     gateway:
@@ -126,11 +144,12 @@ backend:
     customHostname:
       enabled: false
       hosts:
-        - "api.staging.globalyapp.com"       
+        - "staging.globalyapp.com"        
     httpMultipleRoute:
       paths:
         - /
     urlRewriteEnabled: false
+
   targetGroupConfiguration:
     enabled: false
     targetType: "instance"
@@ -140,11 +159,10 @@ backend:
       labelValue: default-server-worker      
     healthCheckPath: "/nginx-health"
     healthCheckProtocol: "HTTP"
-    healthCheckPort: "80"
+    #healthCheckPort: "80"
     healthCheckInterval: 30
-    healthCheckTimeout: 4
+    healthCheckTimeout: 4      # ← ADD THIS LINE
     healthyThresholdCount: 2
     unhealthyThresholdCount: 2
     matcher:
       httpCode: "200-399,401-404"
-    

@@ -1,5 +1,5 @@
 backend:
-  name: staging-api-migrater-globaly-app
+  name: production-api-migrater-globaly-app
   replicaCount: 1
 
   image:

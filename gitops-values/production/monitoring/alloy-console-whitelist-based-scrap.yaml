@@ -1,0 +1,88 @@
+controller:
+  type: deployment
+
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+
+alloy:
+  clustering:
+    enabled: false
+
+  configMap:
+    content: |
+      logging {
+        level  = "info"
+        format = "logfmt"
+      }
+
+      // 1. Discover pods from Kubernetes
+      discovery.kubernetes "app_pods" {
+        role = "pod"
+        namespaces {
+          names = [
+            "kube-system",
+            "agentcisapp-self-hosted",
+          ]
+        }
+      }
+
+      // 2. Filter only specific pods + add labels
+      discovery.relabel "pod_logs" {
+        targets = discovery.kubernetes.app_pods.targets
+
+        // Drop unwanted namespaces
+        rule {
+          source_labels = ["____meta_kubernetes_pod_container_name"]
+          regex         = "agentcisapp-external-secrets-.*|cilium-.*"
+          action        = "keep"
+        }
+
+        // Add namespace label
+        rule {
+          source_labels = ["__meta_kubernetes_namespace"]
+          target_label  = "namespace"
+        }
+
+        // Add pod label
+        rule {
+          source_labels = ["__meta_kubernetes_pod_name"]
+          target_label  = "pod"
+        }
+
+        // Add container label
+        rule {
+          source_labels = ["__meta_kubernetes_pod_container_name"]
+          target_label  = "container"
+        }
+      }
+
+      // 3. Read logs from Kubernetes API
+      loki.source.kubernetes "pod_logs" {
+        targets    = discovery.relabel.pod_logs.output
+        forward_to = [loki.process.add_labels.receiver]
+      }
+
+      // 4. Add static labels
+      loki.process "add_labels" {
+        stage.static_labels {
+          values = {
+            job = "kubernetes-pods",
+          }
+        }
+        forward_to = [loki.write.local_loki.receiver]
+      }
+
+      // 5. Send to Loki
+      loki.write "local_loki" {
+        endpoint {
+          url            = "http://agentcis:agentcis523@172.34.26.95:8081/loki/api/v1/push"
+          remote_timeout = "30s"
+        }
+        external_labels = {
+          environment     = "infra",
+          log_source = "console",
+        }
+      }

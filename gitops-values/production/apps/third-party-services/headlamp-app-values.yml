@@ -1,0 +1,84 @@
+replicaCount: 1
+
+image:
+  registry: ghcr.io
+  repository: headlamp-k8s/headlamp
+  pullPolicy: IfNotPresent
+  tag: ""  # defaults to appVersion in Chart.yaml
+
+fullnameOverride: "headlamp"
+nameOverride: "headlamp"
+
+config:
+  inCluster: true
+  inClusterContextName: "main"   # name shown in the UI for the cluster
+  baseURL: ""
+  sessionTTL: 86400              # 24 hours
+
+  # OIDC — disabled by default (token login used instead)
+  oidc:
+    secret:
+      create: false
+      name: oidc
+    clientID: ""
+    clientSecret: ""
+    issuerURL: ""
+    scopes: ""
+
+  pluginsDir: "/headlamp/plugins"
+  enableHelm: false
+
+# ============================================================
+# Service Account — auto-created with cluster-admin binding
+# so headlamp can read all cluster resources
+# ============================================================
+automountServiceAccountToken: true
+
+serviceAccount:
+  create: true
+  name: "headlamp"
+  annotations: {}
+
+clusterRoleBinding:
+  create: true
+  clusterRoleName: cluster-admin   # gives full read/write access
+  annotations: {}
+
+# ============================================================
+# Service — ClusterIP (use NodePort or Ingress to expose)
+# ============================================================
+service:
+  type: NodePort
+  port: 80
+  # Uncomment below to use NodePort instead:
+  # type: NodePort
+  # nodePort: 30080
+
+# ============================================================
+# Ingress — enable and configure if you have an ingress controller
+# ============================================================
+ingress:
+  enabled: false
+securityContext:
+  runAsNonRoot: true
+  privileged: false
+  runAsUser: 100
+  runAsGroup: 101
+
+podSecurityContext: {}
+resources:
+  requests:
+    cpu: 300m
+    memory: 512Mi
+  limits:
+    cpu: 600m
+    memory: 1024Mi
+
+# ============================================================
+# Misc
+# ============================================================
+nodeSelector: {}
+tolerations: []
+affinity: {}
+podAnnotations: {}
+podLabels: {}

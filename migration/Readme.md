@@ -10,7 +10,7 @@ SELECT current_user, session_user;
 Created token : sbp_some_random_rext_hai_ta
 
 Login to Pod :
-kubectl exec -it -n globalyos-web-server deployments/api-migrater-globaly-os-deployment – sh
+kubectl exec -it -n globalyapp-web-server deployments/api-migrater-globaly-os-deployment – sh
 
 Migration : 
 supabase login --token sbp_some_random_rext_hai_ta
@@ -42,7 +42,7 @@ supabase functions deploy ably-auth --project-ref mugduohzhqkhbembbjjr
 ```bash
 supabase secrets set --project-ref mugduohzhqkhbembbjjr \
   RESEND_API_KEY=re_... \
-  FROM_EMAIL=noreply@globalyos.com \
+  FROM_EMAIL=noreply@globalyapp.com \
   ABLY_API_KEY=xxxxx \
   OPENAI_API_KEY=sk-... \
   STRIPE_SECRET_KEY=sk_live_...
