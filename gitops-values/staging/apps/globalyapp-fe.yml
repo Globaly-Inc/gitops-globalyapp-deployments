@@ -4,7 +4,7 @@ frontend:
 
   image:
     repository: 834033184010.dkr.ecr.ap-south-1.amazonaws.com/staging-globalyapp-frontend
-    tag: globalyapp-frontend-07-15-605642e
+    tag: globalyapp-frontend-07-15-8f0fa05
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
