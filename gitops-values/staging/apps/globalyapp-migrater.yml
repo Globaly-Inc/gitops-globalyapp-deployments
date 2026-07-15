@@ -4,7 +4,7 @@ backend:
 
   image:
     repository: 834033184010.dkr.ecr.ap-south-1.amazonaws.com/staging-globalyapp-migrater
-    tag: globalyapp-migrater-07-15-202cac0
+    tag: globalyapp-migrater-07-15-605642e
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
