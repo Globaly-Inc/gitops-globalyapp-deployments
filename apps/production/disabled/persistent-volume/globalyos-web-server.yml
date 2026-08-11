@@ -3,7 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: pv-globalyapp-consumer.yml
+  name: pv-globalyos-web-server
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io/background     
@@ -14,14 +14,14 @@ spec:
     targetRevision: "live-values"
     ref: values    
   - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
-    targetRevision: "infra"          # branch to deploy
+    targetRevision: "live-values"          # branch to deploy
     path: "helm-charts/self-managed/persistent-volume" # path to the Helm chart
     helm:
       valueFiles:
-        - $values/gitops-values/staging/persistent-volume/globalyapp-consumer.yml    
+        - $values/gitops-values/staging/persistent-volume/globalyos-web-server.yml    
   destination:
     server: https://kubernetes.default.svc
-    namespace: microservice-sub-agent-portal
+    namespace: globalyos-web-server
   syncPolicy:
     automated:
       prune: true

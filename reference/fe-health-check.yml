@@ -1,0 +1,20 @@
+apiVersion: networking.gke.io/v1
+kind: HealthCheckPolicy
+metadata:
+  name: fe-globaly-os-hc
+  namespace: globalyos-web-server
+spec:
+  targetRef:
+    group: ""
+    kind: Service
+    name: fe-globaly-os-svc
+  default:
+    checkIntervalSec: 15
+    timeoutSec: 5
+    healthyThreshold: 2
+    unhealthyThreshold: 3
+    config:
+      type: HTTP
+      httpHealthCheck:
+        port: 80
+        requestPath: /nginx-health

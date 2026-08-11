@@ -56,7 +56,7 @@ spec:
           - $values/gitops-values/staging/others/gateway-api-aws.yml
 
     - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
-      targetRevision: "infra"
+      targetRevision: "live-values"
       ref: values
   ##### taken referenes from repo => https://github.com/todaywasawesome/troubleshooting-argocd/blob/main/example-apps/01-fighting-controllers/app-stuck-syncing-fixed.yaml
   ignoreDifferences:

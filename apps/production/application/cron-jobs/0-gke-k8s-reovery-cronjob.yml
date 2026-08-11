@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: globalyapp-kubernetes-schedular-recovery
+  name: globalyos-kubernetes-schedular-recovery
   namespace: argocd
 spec:
   schedule: "*/7 * * * *"
@@ -27,19 +27,7 @@ spec:
                     | grep -E 'BackOff|Error|Evicted|Unknown|Completed|Terminating' \
                     | awk '{print "-n", $1, $2}' \
                     | xargs -P 10 -L 1 kubectl delete pod --grace-period=0 --force --ignore-not-found=true
-                  echo "Done"               
-
-                  echo "Deleting the aws-elb webhooks"
-                  kubectl delete mutatingwebhookconfiguration aws-load-balancer-webhook
-                  kubectl delete validatingwebhookconfiguration aws-load-balancer-webhook
-
-                  if kubectl logs -n kube-system deployments/aws-load-balancer-controller | grep -qi "failed calling webhook|failed to verify certificate"; then
-                    echo "Errors found! Restarting aws-load-balancer-controller..."
-                    kubectl rollout restart -n kube-system deployment/aws-load-balancer-controller
-                    kubectl rollout status -n kube-system deployment/aws-load-balancer-controller
-                  else
-                    echo "No errors found. Skipping restart."
-                  fi                  
+                  echo "Done"                            
 
                   ########## emergency target group fixing
                   ##### removing #######

@@ -1,27 +1,29 @@
-### agentcisapp-queue-consumer ###########
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: pv-globalyapp-consumer.yml
+  name: headlamp
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
   finalizers:
-    - resources-finalizer.argocd.argoproj.io/background     
+    - resources-finalizer.argocd.argoproj.io/background
 spec:
   project: default
   sources:
   - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
     targetRevision: "live-values"
-    ref: values    
-  - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
-    targetRevision: "infra"          # branch to deploy
-    path: "helm-charts/self-managed/persistent-volume" # path to the Helm chart
+    ref: values
+  - repoURL: "https://kubernetes-sigs.github.io/headlamp/"
+    targetRevision: "0.41.0"  # Replace with desired chart version
+    chart: headlamp
     helm:
+      releaseName: headlamp
       valueFiles:
-        - $values/gitops-values/staging/persistent-volume/globalyapp-consumer.yml    
+        - $values/gitops-values/production/apps/third-party-services/headlamp-app-values.yml
   destination:
     server: https://kubernetes.default.svc
-    namespace: microservice-sub-agent-portal
+    namespace: globalyos-self-hosted
   syncPolicy:
     automated:
       prune: true
@@ -29,6 +31,6 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ApplyOutOfSyncOnly=true
+      - PruneLast=true
       - ServerSideApply=true
-      - PruneLast=true 
       - PrunePropagationPolicy=foreground

@@ -1,0 +1,20 @@
+# httproute-fe.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: fe-globaly-os-route
+  namespace: globalyos-web-server
+spec:
+  parentRefs:
+    - name: globalyos-external-gw
+  hostnames:
+    - "prod.globalyos.com"
+    - "www.globalyos.com"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: fe-globaly-os-svc
+          port: 80

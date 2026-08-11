@@ -1,10 +1,10 @@
-backend:
-  name: production-api-migrater-globaly-app
+consumer:
+  name: consumer-globlay-os-default
   replicaCount: 1
 
   image:
-    repository: 834033184010.dkr.ecr.ap-south-1.amazonaws.com/production-globalyapp-migrater
-    tag: globalyapp-migrater-07-09-982e752
+    repository: 834033184010.dkr.ecr.ap-southeast-2.amazonaws.com/globalyos-backend
+    tag: globalyos-backend-04-30-415360a
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
@@ -12,7 +12,7 @@ backend:
     name: ecr-registry-secret
 
   securityContext:
-    enabled: true
+    enabled: false
     runAsUser: 0       # UID the container process runs as
     runAsGroup: 0      # Primary GID of the container process
     supplementalGroupsAndFsGroup:
@@ -25,24 +25,23 @@ backend:
     unreachableSeconds: 60         
     notReadySeconds: 60   
 
-  workdir:
-    enabled: true
-    path: /globalyapp/migrater/
-
   startupCommand:
     enabled: true
-    shell: /bin/sh
+    shell: /bin/bash
     command: |
       echo "-------------------------------"
-      echo "k8s => restarting nginx"
+      echo "k8s => restarting supervisor"
       echo "-------------------------------"
+      sudo service supervisor start
+      echo "k8s => starting queue"
+      echo "-------------------------------"      
       tail -f /dev/null
-
+      
   resources:
     requests:
-      memory: "200Mi"
+      memory: "500Mi"
     limits:
-      memory: "1500Mi"
+      memory: "800Mi"
   multiplePorts:
     enabled: false
     ports:
@@ -51,7 +50,7 @@ backend:
   livenessProbe:
     enabled: false
     httpGet:
-      path: /nginx-health
+      path: /api/v2/health
       port: 80
     initialDelaySeconds: 20
     periodSeconds: 60
@@ -71,29 +70,25 @@ backend:
       port: 80
     initialDelaySeconds: 15
     periodSeconds: 60
-    failureThreshold: 3
+    failureThreshold: 3 
+
   volumes:
     defaultpvc:
       enabled: false
       volumeName: "logs-storage"
-      pvcName: "pvc-microservice-agent-portal"
-      containerMountPath: "/agent-portal/backend/storage/logs/"
+      pvcName: "pvc-agentcisapp-queue-consumer"
+      containerMountPath: "/home/agentcis/storage/logs/"
       subPath:
         enabled: false      
-        hostSubPath: "agent-portal-api/"
+        hostSubPath: "consumer-globalyos-default/"
 
   affinity:
-    enabled: true
-    preventpolicy:
-      enabled: true
-      key: type
-      values:
-        - cache-server-worker
+    enabled: false
     preferredNodes:
-      - weight: 100
-        key: type
-        values:
-          - web-server-worker
+      - hostname: agentcis-staging-k8s-master-172-34-28-189
+        weight: 100
+      - hostname: other-server
+        weight: 50
 
   service:
     enabled: false
@@ -102,7 +97,7 @@ backend:
     svcport: 29000
 
   hpa:
-    enabled: false
+    enabled: true
     minReplicas: 1
     maxReplicas: 3
     cpuUtilization: 50
@@ -120,13 +115,13 @@ backend:
   httproute:
     enabled: false
     gateway:
-      name: "globalyapp-stage-alb-gateway"
-      namespace: "gateways-globalyapp"
+      name: "agentcisapp-stage-alb-gateway"
+      namespace: "gateways-globalyos"
       sectionName: "https"
     customHostname:
       enabled: false
       hosts:
-        - "api.staging.globalyapp.com"       
+        - "*.staging.agentcis.com"       
     httpMultipleRoute:
       paths:
         - /
@@ -134,17 +129,12 @@ backend:
   targetGroupConfiguration:
     enabled: false
     targetType: "instance"
-    nodeSelector:
-      enabled: false
-      labelName: type
-      labelValue: default-server-worker      
-    healthCheckPath: "/nginx-health"
+    healthCheckPath: "/agent-portal"
     healthCheckProtocol: "HTTP"
     healthCheckPort: "80"
-    healthCheckInterval: 30
-    healthCheckTimeout: 4
+    healthCheckInterval: 5
+    healthCheckTimeout: 4      # ← ADD THIS LINE
     healthyThresholdCount: 2
     unhealthyThresholdCount: 2
     matcher:
       httpCode: "200-399,401-404"
-    

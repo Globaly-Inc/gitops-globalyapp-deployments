@@ -1,12 +1,12 @@
-########################## frontend globlayos ################
+########################## parent api ################
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: production-fe-globalyapp
+  name: cluster-troubleshooter
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "0"  # Installing main backend first
+    argocd.argoproj.io/sync-wave: "-10"  # Installing main backend first
   finalizers:
     - resources-finalizer.argocd.argoproj.io/background   
 spec:
@@ -16,14 +16,19 @@ spec:
     targetRevision: "live-values"
     ref: values   
   - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
-    path: "helm-charts/self-managed/frontend"  # Fixed: was kube-prometheus-stack
+    path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
     targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
-        - $values/gitops-values/production/apps/globalyapp-fe.yml     
+        - $values/gitops-values/production/apps/troubleshooter-globalyos.yml     
   destination:
     server: https://kubernetes.default.svc
-    namespace: production-globalyapp-web-server
+    namespace: globalyos-self-hosted
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - '.spec.template.spec.tolerations[] | select(.key == "kubernetes.io/arch" and .value == "amd64")'       
   syncPolicy:
     automated:
       prune: true
@@ -39,4 +44,5 @@ spec:
       backoff:
         duration: 60s      # ← base interval of 30 seconds
         factor: 2
-        maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain  
+        maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain            
+     

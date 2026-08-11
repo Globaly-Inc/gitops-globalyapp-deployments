@@ -3,7 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: production-api-migrater-globalyapp
+  name: api-globalyos
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "-10"  # Installing main backend first
@@ -20,10 +20,15 @@ spec:
     targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
-        - $values/gitops-values/production/apps/globalyapp-migrater.yml     
+        - $values/gitops-values/production/apps/api-globalyos.yml     
   destination:
     server: https://kubernetes.default.svc
-    namespace: production-globalyapp-web-server
+    namespace: globalyos-web-server
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - '.spec.template.spec.tolerations[] | select(.key == "kubernetes.io/arch" and .value == "amd64")'       
   syncPolicy:
     automated:
       prune: true
@@ -40,3 +45,4 @@ spec:
         duration: 60s      # ← base interval of 30 seconds
         factor: 2
         maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain            
+     

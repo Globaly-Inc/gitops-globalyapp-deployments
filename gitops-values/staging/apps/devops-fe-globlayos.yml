@@ -1,10 +1,10 @@
 frontend:
-  name: production-fe-globaly-app
+  name: devops-fe-globaly-os
   replicaCount: 1
 
   image:
-    repository: 834033184010.dkr.ecr.ap-south-1.amazonaws.com/production-globalyapp-frontend
-    tag: globalyapp-frontend-07-09-982e752
+    repository: 834033184010.dkr.ecr.ap-southeast-2.amazonaws.com/globalyos-frontend
+    tag: globalyos-frontend-05-21-00d55cb
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
@@ -12,7 +12,7 @@ frontend:
     name: ecr-registry-secret
 
   securityContext:
-    enabled: true
+    enabled: false
     runAsUser: 0       # UID the container process runs as
     runAsGroup: 0      # Primary GID of the container process
     supplementalGroupsAndFsGroup:
@@ -27,7 +27,7 @@ frontend:
 
   workdir:
     enabled: true
-    path: /globalyapp/frontend
+    path: /globalyos/frontend
 
   startupCommand:
     enabled: true
@@ -44,10 +44,8 @@ frontend:
   resources:
     requests:
       memory: "100Mi"
-      cpu: "100m"
     limits:
-      memory: "300Mi"
-      cpu: "300m"
+      memory: "100Mi"
 
   volumes:
     defaultpvc:
@@ -60,17 +58,12 @@ frontend:
         hostSubPath: "agentcis-v2-crm-frontend/"
 
   affinity:
-    enabled: true
-    preventpolicy:
-      enabled: true
-      key: type
-      values:
-        - cache-server-worker
+    enabled: false
     preferredNodes:
-      - weight: 100
-        key: type
-        values:
-          - web-server-worker
+      - hostname: agentcis-staging-k8s-master-172-34-28-189
+        weight: 100
+      - hostname: other-server
+        weight: 50
 
   multiplePorts:
     enabled: false
@@ -79,7 +72,7 @@ frontend:
         name: grpc
         
   livenessProbe:
-    enabled: true
+    enabled: false
     httpGet:
       path: /nginx-health
       port: 80
@@ -88,7 +81,7 @@ frontend:
     failureThreshold: 3
 
   readinessProbe:
-    enabled: true
+    enabled: false
     httpGet:
       path: /nginx-health
       port: 80
@@ -97,7 +90,7 @@ frontend:
     failureThreshold: 3
 
   startupProbe:
-    enabled: true
+    enabled: false
     httpGet:
       path: /nginx-health
       port: 80
@@ -118,7 +111,7 @@ frontend:
           targetPort: 50051
           
   hpa:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 3
     cpuUtilization: 50
@@ -128,23 +121,22 @@ frontend:
       podsValue: 1
 
   ingress:
-    enabled: true
-    clusterIssuer: lets-encrypt-production
+    enabled: false
+    clusterIssuer: lets-encrypt
     className: nginx
-    tlsEnabled: false
-    host: production.globalyapp.com
+    host: subash.globalyhub.com
     path: /
     
   httproute:
     enabled: false
     gateway:
-      name: "globalyapp-stage-alb-gateway"
-      namespace: "gateways-globalyapp"
+      name: "globalyos-stage-alb-gateway"
+      namespace: "gateways-globalyos"
       sectionName: "https"
     customHostname:
       enabled: false
       hosts:
-        - "production.globalyapp.com"        
+        - "staging.globalyos.com"        
     httpMultipleRoute:
       paths:
         - /

@@ -1,0 +1,66 @@
+################## dragonfly operator with crd ################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dragonfly-operator
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background   
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/dragonflydb/dragonfly-operator.git
+    targetRevision: v1.1.11
+    # targetRevision: v1.4.0
+    path: manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dragonfly-operator-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ApplyOutOfSyncOnly=true
+    - ServerSideApply=true
+    - PruneLast=true 
+    - PrunePropagationPolicy=foreground   
+
+################## dragonfly statefulset ################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: globalyos-dragonfly-cache
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"  # Installing main backend first
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background   
+spec:
+  project: default
+  sources:
+  - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
+    targetRevision: "live-values"
+    ref: values   
+  - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
+    path: "helm-charts/public/dragonflyoss"  # Fixed: was kube-prometheus-stack
+    targetRevision: "infra"  # Latest chart version
+    helm:
+      valueFiles:
+        - $values/gitops-values/production/apps/third-party-services/globalyos-caching.yml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: globalyos-self-hosted
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - ServerSideApply=true
+      - PrunePropagationPolicy=foreground

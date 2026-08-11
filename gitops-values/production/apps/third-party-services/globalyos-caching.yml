@@ -1,0 +1,62 @@
+dragonfly:
+  name: dragonfly-cache
+  replicas: 1
+  image:
+    repository: docker.dragonflydb.io/dragonflydb/dragonfly
+    tag: v1.28.1
+    #tag: "v1.36.0"  
+
+  # resources:
+  #   requests:
+  #     cpu: 1400m
+  #     memory: 4500Mi
+  #   limits:
+  #     cpu: 1600m
+  #     memory: 6500Mi
+
+  args:
+    - --alsologtostderr
+    - --primary_port_http_enabled=false
+    - --proactor_threads=2
+    - --maxmemory=6227702579    # 6.23 GB
+    - --admin_nopass
+    - --admin_port=9999
+    - --cache_mode=true
+    - --enable_heartbeat_eviction=true
+    - --max_eviction_per_heartbeat=25
+    - --max_segment_to_consider=4
+    - --default_lua_flags=allow-undeclared-keys,disable-atomicity
+    - --lua_auto_async=true
+    - --pipeline_buffer_limit=2147483648   # 2.15 GB
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: topology.kubernetes.io/zone
+            operator: In
+            values:
+            - asia-south1-a
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: dragonfly
+            app.kubernetes.io/part-of: dragonfly
+        topologyKey: kubernetes.io/hostname
+
+###################### service #####################
+  # service:
+  #   enabled: true
+  #   type: NodePort
+  #   ports:
+  #   - name: redis
+  #     port: 6379
+  #     targetPort: 6379
+  #     nodePort: 6379      
+  #     protocol: TCP
+  #   - name: admin
+  #     port: 9999
+  #     targetPort: 9999
+  #     protocol: TCP
