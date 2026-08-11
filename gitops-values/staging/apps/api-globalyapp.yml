@@ -1,61 +1,85 @@
-frontend:
-  name: devops-fe-globaly-os
+backend:
+  name: api-globaly-os
   replicaCount: 1
 
   image:
-    repository: 834033184010.dkr.ecr.ap-southeast-2.amazonaws.com/globalyos-frontend
-    tag: globalyos-frontend-05-21-00d55cb
+    repository: asia-south1-docker.pkg.dev/globalyos-production/globalyos-v3/backend
+    tag: backend-08-10-8ecea91
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
-    enabled: false
+    enabled: true
     name: ecr-registry-secret
 
   securityContext:
-    enabled: false
+    enabled: true
     runAsUser: 0       # UID the container process runs as
     runAsGroup: 0      # Primary GID of the container process
     supplementalGroupsAndFsGroup:
       enabled: false
       supplementalGroups: [4000]
       fsGroup: 2000
-      
+
   tolerations:
     enabled: true                  
     unreachableSeconds: 60         
-    notReadySeconds: 60    
-
-  workdir:
-    enabled: true
-    path: /globalyos/frontend
+    notReadySeconds: 60   
 
   startupCommand:
-    enabled: true
+    enabled: false
     shell: /bin/sh
     command: |
       echo "-------------------------------"
       echo "k8s => restarting nginx"
       echo "-------------------------------"
       sudo service nginx start
-      #nginx -g daemon off
+      echo "k8s => starting NODE backend"
+      echo "-------------------------------"
       tail -f /dev/null
-      
 
   resources:
     requests:
-      memory: "100Mi"
+      memory: "200Mi"
     limits:
-      memory: "100Mi"
-
+      memory: "300Mi"
+  multiplePorts:
+    enabled: false
+    ports:
+      - port: 9000
+        name: http
+  livenessProbe:
+    enabled: false
+    httpGet:
+      path: /api/v1/health
+      port: 80
+    initialDelaySeconds: 20
+    periodSeconds: 60
+    failureThreshold: 3
+  readinessProbe:
+    enabled: false
+    httpGet:
+      path: /nginx-health
+      port: 80
+    initialDelaySeconds: 15
+    periodSeconds: 60
+    failureThreshold: 3
+  startupProbe:
+    enabled: false
+    httpGet:
+      path: /nginx-health
+      port: 80
+    initialDelaySeconds: 15
+    periodSeconds: 60
+    failureThreshold: 3
   volumes:
     defaultpvc:
       enabled: false
       volumeName: "logs-storage"
-      pvcName: "pvc-agentcis-v2"
-      containerMountPath: "/var/log/nginx/"
+      pvcName: "pvc-microservice-agent-portal"
+      containerMountPath: "/agent-portal/backend/storage/logs/"
       subPath:
         enabled: false      
-        hostSubPath: "agentcis-v2-crm-frontend/"
+        hostSubPath: "agent-portal-api/"
 
   affinity:
     enabled: false
@@ -65,53 +89,14 @@ frontend:
       - hostname: other-server
         weight: 50
 
-  multiplePorts:
-    enabled: false
-    ports:
-      - port: 50051
-        name: grpc
-        
-  livenessProbe:
-    enabled: false
-    httpGet:
-      path: /nginx-health
-      port: 80
-    initialDelaySeconds: 30
-    periodSeconds: 30
-    failureThreshold: 3
-
-  readinessProbe:
-    enabled: false
-    httpGet:
-      path: /nginx-health
-      port: 80
-    initialDelaySeconds: 30
-    periodSeconds: 30
-    failureThreshold: 3
-
-  startupProbe:
-    enabled: false
-    httpGet:
-      path: /nginx-health
-      port: 80
-    initialDelaySeconds: 30
-    periodSeconds: 30
-    failureThreshold: 10
-
   service:
     enabled: true
     type: NodePort
     containerport: 80
-    svcport: 80    
-    multiplePorts:
-      enabled: false
-      ports:
-        - name: grpc
-          port: 50051
-          targetPort: 50051
-          
+    svcport: 80
+
   hpa:
-    enabled: false
+    enabled: true
     minReplicas: 1
     maxReplicas: 3
     cpuUtilization: 50
@@ -126,7 +111,6 @@ frontend:
     className: nginx
     host: subash.globalyhub.com
     path: /
-    
   httproute:
     enabled: false
     gateway:
@@ -136,12 +120,11 @@ frontend:
     customHostname:
       enabled: false
       hosts:
-        - "staging.globalyos.com"        
+        - "api.staging.globalyos.com"       
     httpMultipleRoute:
       paths:
         - /
     urlRewriteEnabled: false
-
   targetGroupConfiguration:
     enabled: false
     targetType: "instance"
@@ -151,10 +134,11 @@ frontend:
       labelValue: default-server-worker      
     healthCheckPath: "/nginx-health"
     healthCheckProtocol: "HTTP"
-    #healthCheckPort: "80"
+    healthCheckPort: "80"
     healthCheckInterval: 30
-    healthCheckTimeout: 4      # ← ADD THIS LINE
+    healthCheckTimeout: 4
     healthyThresholdCount: 2
     unhealthyThresholdCount: 2
     matcher:
       httpCode: "200-399,401-404"
+    

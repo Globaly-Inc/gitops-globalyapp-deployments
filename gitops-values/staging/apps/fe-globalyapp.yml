@@ -1,10 +1,10 @@
-consumer:
-  name: consumer-globlay-os-default
+frontend:
+  name: fe-globaly-os
   replicaCount: 1
 
   image:
-    repository: 834033184010.dkr.ecr.ap-southeast-2.amazonaws.com/globalyos-backend
-    tag: globalyos-backend-04-30-415360a
+    repository: asia-south1-docker.pkg.dev/globalyos-production/globalyos-v3/frontend
+    tag: frontend-08-10-8ecea91
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
@@ -19,68 +19,43 @@ consumer:
       enabled: false
       supplementalGroups: [4000]
       fsGroup: 2000
-
+      
   tolerations:
     enabled: true                  
     unreachableSeconds: 60         
-    notReadySeconds: 60   
+    notReadySeconds: 60    
+
+  workdir:
+    enabled: true
+    path: /globalyos/frontend
 
   startupCommand:
-    enabled: true
-    shell: /bin/bash
+    enabled: false
+    shell: /bin/sh
     command: |
       echo "-------------------------------"
-      echo "k8s => restarting supervisor"
+      echo "k8s => restarting nginx"
       echo "-------------------------------"
-      sudo service supervisor start
-      echo "k8s => starting queue"
-      echo "-------------------------------"      
+      sudo service nginx start
+      #nginx -g daemon off
       tail -f /dev/null
       
+
   resources:
     requests:
-      memory: "500Mi"
+      memory: "300Mi"
     limits:
       memory: "800Mi"
-  multiplePorts:
-    enabled: false
-    ports:
-      - port: 9000
-        name: http
-  livenessProbe:
-    enabled: false
-    httpGet:
-      path: /api/v2/health
-      port: 80
-    initialDelaySeconds: 20
-    periodSeconds: 60
-    failureThreshold: 3
-  readinessProbe:
-    enabled: false
-    httpGet:
-      path: /nginx-health
-      port: 80
-    initialDelaySeconds: 15
-    periodSeconds: 60
-    failureThreshold: 3
-  startupProbe:
-    enabled: false
-    httpGet:
-      path: /nginx-health
-      port: 80
-    initialDelaySeconds: 15
-    periodSeconds: 60
-    failureThreshold: 3 
 
   volumes:
     defaultpvc:
       enabled: false
       volumeName: "logs-storage"
-      pvcName: "pvc-agentcisapp-queue-consumer"
-      containerMountPath: "/home/agentcis/storage/logs/"
+      pvcName: "pvc-agentcis-v2"
+      containerMountPath: "/var/log/nginx/"
       subPath:
         enabled: false      
-        hostSubPath: "consumer-globalyos-default/"
+        hostSubPath: "agentcis-v2-crm-frontend/"
 
   affinity:
     enabled: false
@@ -90,14 +65,53 @@ consumer:
       - hostname: other-server
         weight: 50
 
-  service:
+  multiplePorts:
     enabled: false
+    ports:
+      - port: 50051
+        name: grpc
+        
+  livenessProbe:
+    enabled: false
+    httpGet:
+      path: /nginx-health
+      port: 80
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    failureThreshold: 3
+
+  readinessProbe:
+    enabled: false
+    httpGet:
+      path: /nginx-health
+      port: 80
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    failureThreshold: 3
+
+  startupProbe:
+    enabled: false
+    httpGet:
+      path: /nginx-health
+      port: 80
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    failureThreshold: 10
+
+  service:
+    enabled: true
     type: NodePort
     containerport: 80
-    svcport: 29000
-
+    svcport: 80    
+    multiplePorts:
+      enabled: false
+      ports:
+        - name: grpc
+          port: 50051
+          targetPort: 50051
+          
   hpa:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 3
     cpuUtilization: 50
@@ -112,27 +126,33 @@ consumer:
     className: nginx
     host: subash.globalyhub.com
     path: /
+    
   httproute:
     enabled: false
     gateway:
-      name: "agentcisapp-stage-alb-gateway"
+      name: "globalyos-stage-alb-gateway"
       namespace: "gateways-globalyos"
       sectionName: "https"
     customHostname:
       enabled: false
       hosts:
-        - "*.staging.agentcis.com"       
+        - "staging.globalyos.com"        
     httpMultipleRoute:
       paths:
         - /
     urlRewriteEnabled: false
+
   targetGroupConfiguration:
     enabled: false
     targetType: "instance"
-    healthCheckPath: "/agent-portal"
+    nodeSelector:
+      enabled: false
+      labelName: type
+      labelValue: default-server-worker      
+    healthCheckPath: "/nginx-health"
     healthCheckProtocol: "HTTP"
-    healthCheckPort: "80"
-    healthCheckInterval: 5
+    #healthCheckPort: "80"
+    healthCheckInterval: 30
     healthCheckTimeout: 4      # ← ADD THIS LINE
     healthyThresholdCount: 2
     unhealthyThresholdCount: 2
