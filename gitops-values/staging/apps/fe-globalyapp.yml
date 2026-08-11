@@ -4,7 +4,7 @@ frontend:
 
   image:
     repository: asia-south1-docker.pkg.dev/globalyos-production/globalyos-v3/frontend
-    tag: frontend-08-10-8ecea91
+    tag: frontend-08-11-86a1139
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
