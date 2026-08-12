@@ -23,7 +23,7 @@ spec:
         - $values/gitops-values/staging/apps/fe-globlayos.yml     
   destination:
     server: https://kubernetes.default.svc
-    namespace: globalyos-web-server
+    namespace: globalyapp-web-server
   syncPolicy:
     automated:
       prune: true

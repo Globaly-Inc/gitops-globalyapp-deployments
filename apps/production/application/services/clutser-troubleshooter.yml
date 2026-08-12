@@ -20,10 +20,10 @@ spec:
     targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
-        - $values/gitops-values/production/apps/troubleshooter-globalyos.yml     
+        - $values/gitops-values/production/apps/troubleshooter-globalyapp.yml     
   destination:
     server: https://kubernetes.default.svc
-    namespace: globalyos-self-hosted
+    namespace: globalyapp-self-hosted
   ignoreDifferences:
     - group: apps
       kind: Deployment

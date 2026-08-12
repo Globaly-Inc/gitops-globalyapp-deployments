@@ -33,7 +33,7 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: globalyos-dragonfly-cache
+  name: globalyapp-dragonfly-cache
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "-10"  # Installing main backend first
@@ -50,10 +50,10 @@ spec:
     targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
-        - $values/gitops-values/production/apps/third-party-services/globalyos-caching.yml
+        - $values/gitops-values/production/apps/third-party-services/globalyapp-caching.yml
   destination:
     server: https://kubernetes.default.svc
-    namespace: globalyos-self-hosted
+    namespace: globalyapp-self-hosted
   syncPolicy:
     automated:
       prune: true

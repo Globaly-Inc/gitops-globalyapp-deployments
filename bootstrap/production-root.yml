@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: 010-globalyos-prod-pre-setup-010
+  name: 010-globalyapp-prod-pre-setup-010
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io/background
@@ -38,7 +38,7 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: 111-globalyos-prod-application-111
+  name: 111-globalyapp-prod-application-111
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io/background

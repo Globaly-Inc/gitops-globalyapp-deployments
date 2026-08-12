@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: globalyos-aws-api-gateway
+  name: globalyapp-aws-api-gateway
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "-20"  # Installing  before microservices start  
@@ -21,7 +21,7 @@ spec:
         - $values/gitops-values/staging/others/alb-aws-gw-agentciapp-parent-api.yml   # your backend values file         
   destination:
     server: https://kubernetes.default.svc
-    namespace: gateways-globalyos
+    namespace: gateways-globalyapp
   ignoreDifferences:
   - group: gateway.networking.k8s.io
     kind: HTTPRoute

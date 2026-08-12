@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: globalyos-nfs-directory-create
+  name: globalyapp-nfs-directory-create
   namespace: argocd
 spec:
   schedule: "*/7 * * * *"
@@ -32,8 +32,8 @@ spec:
                 - |
                   echo "Creating directories on NFS..."
                   mkdir -p \
-                    /mnt/nfs/globalyos-web-server \
-                    /mnt/nfs/globalyos-consumer
+                    /mnt/nfs/globalyapp-web-server \
+                    /mnt/nfs/globalyapp-consumer
                   echo "Setting permissions and ownership..."
                   find /mnt/nfs -maxdepth 2 -type d -exec chmod 777 {} \;
                   echo "Done. Directory structure:"

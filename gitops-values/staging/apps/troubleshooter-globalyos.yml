@@ -3,7 +3,7 @@ backend:
   replicaCount: 1
 
   image:
-    repository: asia-south1-docker.pkg.dev/globalyos-production/globalyos-v3/troubleshooter
+    repository: asia-south1-docker.pkg.dev/globalyapp-production/globalyapp-v3/troubleshooter
     tag: troubleshooter-08-11-86a1139
     pullPolicy: IfNotPresent
 
@@ -114,13 +114,13 @@ backend:
   httproute:
     enabled: false
     gateway:
-      name: "globalyos-stage-alb-gateway"
-      namespace: "gateways-globalyos"
+      name: "globalyapp-stage-alb-gateway"
+      namespace: "gateways-globalyapp"
       sectionName: "https"
     customHostname:
       enabled: false
       hosts:
-        - "api.staging.globalyos.com"       
+        - "api.staging.globalyapp.com"       
     httpMultipleRoute:
       paths:
         - /

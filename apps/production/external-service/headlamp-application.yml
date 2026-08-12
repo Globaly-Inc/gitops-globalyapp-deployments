@@ -23,7 +23,7 @@ spec:
         - $values/gitops-values/production/apps/third-party-services/headlamp-app-values.yml
   destination:
     server: https://kubernetes.default.svc
-    namespace: globalyos-self-hosted
+    namespace: globalyapp-self-hosted
   syncPolicy:
     automated:
       prune: true

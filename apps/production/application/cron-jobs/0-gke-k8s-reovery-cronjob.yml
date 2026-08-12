@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: globalyos-kubernetes-schedular-recovery
+  name: globalyapp-kubernetes-schedular-recovery
   namespace: argocd
 spec:
   schedule: "*/7 * * * *"

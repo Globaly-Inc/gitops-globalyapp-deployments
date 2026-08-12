@@ -2,7 +2,7 @@ apiVersion: networking.gke.io/v1
 kind: HealthCheckPolicy
 metadata:
   name: fe-globaly-os-hc
-  namespace: globalyos-web-server
+  namespace: globalyapp-web-server
 spec:
   targetRef:
     group: ""

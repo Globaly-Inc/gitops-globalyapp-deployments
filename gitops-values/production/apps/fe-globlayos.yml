@@ -3,7 +3,7 @@ frontend:
   replicaCount: 1
 
   image:
-    repository: asia-south1-docker.pkg.dev/globalyos-production/globalyos-v3/frontend
+    repository: asia-south1-docker.pkg.dev/globalyapp-production/globalyapp-v3/frontend
     tag: frontend-08-10-8ecea91
     pullPolicy: IfNotPresent
 
@@ -27,7 +27,7 @@ frontend:
 
   workdir:
     enabled: true
-    path: /globalyos/frontend
+    path: /globalyapp/frontend
 
   startupCommand:
     enabled: false
@@ -130,13 +130,13 @@ frontend:
   httproute:
     enabled: false
     gateway:
-      name: "globalyos-stage-alb-gateway"
-      namespace: "gateways-globalyos"
+      name: "globalyapp-stage-alb-gateway"
+      namespace: "gateways-globalyapp"
       sectionName: "https"
     customHostname:
       enabled: false
       hosts:
-        - "staging.globalyos.com"        
+        - "staging.globalyapp.com"        
     httpMultipleRoute:
       paths:
         - /
