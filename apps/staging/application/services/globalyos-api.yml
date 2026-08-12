@@ -24,6 +24,11 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: globalyapp-web-server
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - '.spec.template.spec.tolerations[] | select(.key == "kubernetes.io/arch" and .value == "amd64")'     
   syncPolicy:
     automated:
       prune: true
