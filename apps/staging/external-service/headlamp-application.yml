@@ -1,0 +1,36 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: headlamp
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  project: default
+  sources:
+  - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
+    targetRevision: "live-values"
+    ref: values
+  - repoURL: "https://kubernetes-sigs.github.io/headlamp/"
+    targetRevision: "0.41.0"  # Replace with desired chart version
+    chart: headlamp
+    helm:
+      releaseName: headlamp
+      valueFiles:
+        - $values/gitops-values/staging/apps/third-party-services/headlamp-app-values.yml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: globalyapp-self-hosted
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - ServerSideApply=true
+      - PrunePropagationPolicy=foreground
