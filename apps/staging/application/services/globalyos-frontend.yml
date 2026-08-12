@@ -20,7 +20,7 @@ spec:
     targetRevision: "staging"  # Latest chart version
     helm:
       valueFiles:
-        - $values/gitops-values/staging/apps/fe-globlayos.yml     
+        - $values/gitops-values/staging/apps/fe-globalyapp.yml     
   destination:
     server: https://kubernetes.default.svc
     namespace: globalyapp-web-server
