@@ -14,7 +14,7 @@ spec:
   sources:
   - repoURL: "https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git"
     path: "apps/staging/pre-apps"
-    targetRevision: "infra"
+    targetRevision: "live-values"
     directory:
       recurse: true
   syncPolicy:
@@ -51,12 +51,12 @@ spec:
   sources:
   - repoURL: "https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git"
     path: "apps/staging/application"
-    targetRevision: "infra"
+    targetRevision: "live-values"
     directory:
       recurse: true
   - repoURL: "https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git"
     path: "apps/staging/public-traffic/"
-    targetRevision: "infra"
+    targetRevision: "live-values"
     directory:
       recurse: true
   syncPolicy:
