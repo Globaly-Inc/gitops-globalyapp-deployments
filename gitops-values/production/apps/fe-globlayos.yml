@@ -1,5 +1,5 @@
 frontend:
-  name: fe-globaly-os
+  name: fe-globaly-app
   replicaCount: 1
 
   image:

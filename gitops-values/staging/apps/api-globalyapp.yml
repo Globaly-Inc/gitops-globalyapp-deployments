@@ -1,5 +1,5 @@
 backend:
-  name: api-globaly-os
+  name: api-globaly-app
   replicaCount: 1
 
   image:

@@ -2,19 +2,18 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: fe-globaly-os-route
+  name: fe-globaly-app-route
   namespace: globalyapp-web-server
 spec:
   parentRefs:
     - name: globalyapp-external-gw
   hostnames:
-    - "prod.globalyapp.com"
-    - "www.globalyapp.com"
+    - "staging.globalyapp.com"
   rules:
     - matches:
         - path:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: fe-globaly-os-svc
+        - name: fe-globaly-app-svc
           port: 80

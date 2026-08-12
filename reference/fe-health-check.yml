@@ -1,13 +1,13 @@
 apiVersion: networking.gke.io/v1
 kind: HealthCheckPolicy
 metadata:
-  name: fe-globaly-os-hc
+  name: fe-globaly-app-hc
   namespace: globalyapp-web-server
 spec:
   targetRef:
     group: ""
     kind: Service
-    name: fe-globaly-os-svc
+    name: fe-globaly-app-svc
   default:
     checkIntervalSec: 15
     timeoutSec: 5
