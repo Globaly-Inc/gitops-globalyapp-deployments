@@ -1,0 +1,20 @@
+apiVersion: networking.gke.io/v1
+kind: HealthCheckPolicy
+metadata:
+  name: api-globaly-app-hc
+  namespace: globalyapp-web-server
+spec:
+  targetRef:
+    group: ""
+    kind: Service
+    name: api-globaly-app-svc
+  default:
+    checkIntervalSec: 15
+    timeoutSec: 5
+    healthyThreshold: 2
+    unhealthyThreshold: 3
+    config:
+      type: HTTP
+      httpHealthCheck:
+        port: 80
+        requestPath: /nginx-health
