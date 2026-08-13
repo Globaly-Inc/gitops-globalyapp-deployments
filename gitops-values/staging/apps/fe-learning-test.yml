@@ -4,7 +4,7 @@ frontend:
 
   image:
     repository: asia-south1-docker.pkg.dev/globalyapp-staging/globalyapp-v3/learn-frontend
-    tag: learn-frontend-08-13-0632012
+    tag: learn-frontend-08-13-f5f4b31
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
