@@ -1,0 +1,335 @@
+########################## worker: job:auth ################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: worker-auth
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"  # Installing main backend first
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  project: default
+  sources:
+  - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
+    targetRevision: "live-values"
+    ref: values
+  - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
+    path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
+    targetRevision: "infra"  # Latest chart version
+    helm:
+      valueFiles:
+        - $values/gitops-values/production/apps/workers/worker-auth.yml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: globalyapp-worker
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - '.spec.template.spec.tolerations[] | select(.key == "kubernetes.io/arch" and .value == "amd64")'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - ServerSideApply=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: -1            # ← unlimited retries
+      backoff:
+        duration: 60s      # ← base interval of 30 seconds
+        factor: 2
+        maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain
+
+########################## worker: job:extraction ################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: worker-extraction
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"  # Installing main backend first
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  project: default
+  sources:
+  - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
+    targetRevision: "live-values"
+    ref: values
+  - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
+    path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
+    targetRevision: "infra"  # Latest chart version
+    helm:
+      valueFiles:
+        - $values/gitops-values/production/apps/workers/worker-extraction.yml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: globalyapp-worker
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - '.spec.template.spec.tolerations[] | select(.key == "kubernetes.io/arch" and .value == "amd64")'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - ServerSideApply=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: -1            # ← unlimited retries
+      backoff:
+        duration: 60s      # ← base interval of 30 seconds
+        factor: 2
+        maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain
+
+########################## worker: job:extraction-pages ################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: worker-extraction-pages
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"  # Installing main backend first
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  project: default
+  sources:
+  - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
+    targetRevision: "live-values"
+    ref: values
+  - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
+    path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
+    targetRevision: "infra"  # Latest chart version
+    helm:
+      valueFiles:
+        - $values/gitops-values/production/apps/workers/worker-extraction-pages.yml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: globalyapp-worker
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - '.spec.template.spec.tolerations[] | select(.key == "kubernetes.io/arch" and .value == "amd64")'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - ServerSideApply=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: -1            # ← unlimited retries
+      backoff:
+        duration: 60s      # ← base interval of 30 seconds
+        factor: 2
+        maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain
+
+########################## worker: job:extraction-verify ################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: worker-extraction-verify
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"  # Installing main backend first
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  project: default
+  sources:
+  - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
+    targetRevision: "live-values"
+    ref: values
+  - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
+    path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
+    targetRevision: "infra"  # Latest chart version
+    helm:
+      valueFiles:
+        - $values/gitops-values/production/apps/workers/worker-extraction-verify.yml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: globalyapp-worker
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - '.spec.template.spec.tolerations[] | select(.key == "kubernetes.io/arch" and .value == "amd64")'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - ServerSideApply=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: -1            # ← unlimited retries
+      backoff:
+        duration: 60s      # ← base interval of 30 seconds
+        factor: 2
+        maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain
+
+########################## worker: job:extraction-step ################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: worker-extraction-step
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"  # Installing main backend first
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  project: default
+  sources:
+  - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
+    targetRevision: "live-values"
+    ref: values
+  - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
+    path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
+    targetRevision: "infra"  # Latest chart version
+    helm:
+      valueFiles:
+        - $values/gitops-values/production/apps/workers/worker-extraction-step.yml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: globalyapp-worker
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - '.spec.template.spec.tolerations[] | select(.key == "kubernetes.io/arch" and .value == "amd64")'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - ServerSideApply=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: -1            # ← unlimited retries
+      backoff:
+        duration: 60s      # ← base interval of 30 seconds
+        factor: 2
+        maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain
+
+########################## worker: job:extraction-schedule ################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: worker-extraction-schedule
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"  # Installing main backend first
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  project: default
+  sources:
+  - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
+    targetRevision: "live-values"
+    ref: values
+  - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
+    path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
+    targetRevision: "infra"  # Latest chart version
+    helm:
+      valueFiles:
+        - $values/gitops-values/production/apps/workers/worker-extraction-schedule.yml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: globalyapp-worker
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - '.spec.template.spec.tolerations[] | select(.key == "kubernetes.io/arch" and .value == "amd64")'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - ServerSideApply=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: -1            # ← unlimited retries
+      backoff:
+        duration: 60s      # ← base interval of 30 seconds
+        factor: 2
+        maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain
+
+########################## worker: job:extraction-agentcis ################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: worker-extraction-agentcis
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"  # Installing main backend first
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  project: default
+  sources:
+  - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
+    targetRevision: "live-values"
+    ref: values
+  - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
+    path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
+    targetRevision: "infra"  # Latest chart version
+    helm:
+      valueFiles:
+        - $values/gitops-values/production/apps/workers/worker-extraction-agentcis.yml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: globalyapp-worker
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - '.spec.template.spec.tolerations[] | select(.key == "kubernetes.io/arch" and .value == "amd64")'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - ServerSideApply=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: -1            # ← unlimited retries
+      backoff:
+        duration: 60s      # ← base interval of 30 seconds
+        factor: 2
+        maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain
