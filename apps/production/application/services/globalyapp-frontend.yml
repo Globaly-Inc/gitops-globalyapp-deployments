@@ -20,7 +20,7 @@ spec:
     targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
-        - $values/gitops-values/production/apps/fe-globlayos.yml     
+        - $values/gitops-values/production/apps/fe-globalyapp.yml     
   destination:
     server: https://kubernetes.default.svc
     namespace: globalyapp-web-server
