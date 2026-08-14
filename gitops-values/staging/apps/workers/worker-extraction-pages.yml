@@ -1,5 +1,5 @@
 backend:
-  name: api-globaly-app
+  name: worker-extraction-pages
   replicaCount: 1
 
   image:
