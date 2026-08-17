@@ -159,22 +159,22 @@ frontend:
     matcher:
       httpCode: "200-399,401-404"
   gcphttproute:
-    enabled: false
+    enabled: true
     gateway:
       name: "globalyapp-external-gw"
       namespace: "globalyapp-web-server"
       sectionName: ""
     customHostname:
-      enabled: false
+      enabled: true
       hosts:
-        - "staging.globalyapp.com"
+        - "beta.globalyapp.com"
     httpMultipleRoute:
       paths:
         - /
     urlRewriteEnabled: false
     weight: 1
   gcpHealthcheck:
-    enabled: false
+    enabled: true
     checkIntervalSec: 15
     timeoutSec: 5
     healthyThreshold: 2
