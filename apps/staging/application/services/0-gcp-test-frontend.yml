@@ -17,7 +17,7 @@ spec:
     ref: values   
   - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
     path: "helm-charts/self-managed/frontend"  # Fixed: was kube-prometheus-stack
-    targetRevision: "staging"  # Latest chart version
+    targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
         - $values/gitops-values/staging/apps/0-gcp-test-frontend.yml     

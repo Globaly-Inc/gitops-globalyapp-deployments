@@ -14,7 +14,7 @@ spec:
     targetRevision: "live-values"
     ref: values    
   - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
-    targetRevision: "gcp-gw-infra"          # branch to deploy
+    targetRevision: "infra"          # branch to deploy
     path: "helm-charts/self-managed/gcp-gw-api" # path to the Helm chart
     helm:
       valueFiles:

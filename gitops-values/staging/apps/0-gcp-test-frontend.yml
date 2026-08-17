@@ -174,7 +174,7 @@ frontend:
     urlRewriteEnabled: false
     weight: 1
   gcpHealthcheck:
-    enabled: true
+    enabled: false
     checkIntervalSec: 15
     timeoutSec: 5
     healthyThreshold: 2
