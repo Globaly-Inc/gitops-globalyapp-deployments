@@ -161,8 +161,8 @@ frontend:
   gcphttproute:
     enabled: true
     gateway:
-      name: "globalyapp-external-gw"
-      namespace: "globalyapp-web-server"
+      name: "gcp-globalyapp-external-gw"
+      namespace: "gateways-globalyapp"
       sectionName: ""
     customHostname:
       enabled: true
