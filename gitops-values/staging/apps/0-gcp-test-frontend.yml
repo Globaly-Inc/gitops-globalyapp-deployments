@@ -1,5 +1,5 @@
 frontend:
-  name: 0-gcp-fe-globaly-app
+  name: gcp-fe-globaly-app
   replicaCount: 1
 
   image:
