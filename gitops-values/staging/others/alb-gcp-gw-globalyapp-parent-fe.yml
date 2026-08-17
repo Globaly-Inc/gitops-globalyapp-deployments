@@ -5,8 +5,8 @@ gateway:
       name: gcp-globalyapp-external ##### -gw (chart le automatic add garcha)
       #### final => name: globalyapp-external-gw
       gatewayClassName: gke-l7-global-external-managed
-      listener_http_namespaces: "Same"      # Shared for both HTTP/HTTPS
-      listener_https_namespaces: "Same"     # separate HTTPS value
+      listener_http_namespaces: "All"      # Shared for both HTTP/HTTPS
+      listener_https_namespaces: "All"     # separate HTTPS value
     tls:
       enabled: false
       mode: Terminate
