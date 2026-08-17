@@ -158,3 +158,26 @@ frontend:
     unhealthyThresholdCount: 2
     matcher:
       httpCode: "200-399,401-404"
+  gcphttproute:
+    enabled: false
+    gateway:
+      name: "globalyapp-external-gw"
+      namespace: "globalyapp-web-server"
+      sectionName: ""
+    customHostname:
+      enabled: false
+      hosts:
+        - "staging.globalyapp.com"
+    httpMultipleRoute:
+      paths:
+        - /
+    urlRewriteEnabled: false
+    weight: 1
+  gcpHealthcheck:
+    enabled: false
+    checkIntervalSec: 15
+    timeoutSec: 5
+    healthyThreshold: 2
+    unhealthyThreshold: 3
+    port: 80
+    requestPath: "/nginx-health"      
