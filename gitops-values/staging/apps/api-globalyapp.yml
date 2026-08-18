@@ -141,4 +141,26 @@ backend:
     unhealthyThresholdCount: 2
     matcher:
       httpCode: "200-399,401-404"
-    
+  gcphttproute:
+    enabled: true
+    gateway:
+      name: "gcp-globalyapp-external-gw"
+      namespace: "gateways-globalyapp"
+      sectionName: ""
+    customHostname:
+      enabled: true
+      hosts:
+        - "apistaging.globalyapp.com"
+    httpMultipleRoute:
+      paths:
+        - /
+    urlRewriteEnabled: false
+    weight: 1
+  gcpHealthcheck:
+    enabled: true
+    checkIntervalSec: 15
+    timeoutSec: 5
+    healthyThreshold: 2
+    unhealthyThreshold: 3
+    port: 80
+    requestPath: "/nginx-health"
