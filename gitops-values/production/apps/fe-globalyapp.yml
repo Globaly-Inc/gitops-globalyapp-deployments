@@ -167,7 +167,7 @@ frontend:
     customHostname:
       enabled: true
       hosts:
-        - "globalyapp.com"
+        - "production.globalyapp.com"
     httpMultipleRoute:
       paths:
         - /
