@@ -21,7 +21,7 @@ microservice:
         - "/"
     weight: 1
   gcpHealthcheck:
-    enabled: false
+    enabled: true
     checkIntervalSec: 15
     timeoutSec: 5
     healthyThreshold: 2
