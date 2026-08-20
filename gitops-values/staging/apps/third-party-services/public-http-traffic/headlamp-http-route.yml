@@ -15,7 +15,7 @@ microservice:
     customHostname:
       enabled: true
       hosts:
-        - "headlamp.staging.globalyapp.com"
+        - "infrastaging.globalyapp.com"
     httpMultipleRoute:
       paths:
         - "/"

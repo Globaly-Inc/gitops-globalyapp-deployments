@@ -15,7 +15,7 @@ microservice:
     customHostname:
       enabled: true
       hosts:
-        - "argocd.staging.globalyapp.com"
+        - "deploystaging.globalyapp.com"
     httpMultipleRoute:
       paths:
         - "/"
