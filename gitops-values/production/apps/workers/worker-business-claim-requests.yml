@@ -1,10 +1,10 @@
 backend:
-  name: api-globaly-app
+  name: worker-business-claim-requests
   replicaCount: 1
 
   image:
     repository: asia-south1-docker.pkg.dev/globalyapp-production/globalyapp-v3/backend
-    tag: backend-08-15-252049a
+    tag: backend-08-14-0da4ad5
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
@@ -21,21 +21,18 @@ backend:
       fsGroup: 2000
 
   tolerations:
-    enabled: true                  
-    unreachableSeconds: 60         
-    notReadySeconds: 60   
+    enabled: true
+    unreachableSeconds: 60
+    notReadySeconds: 60
 
   startupCommand:
-    enabled: false
+    enabled: true
     shell: /bin/sh
     command: |
       echo "-------------------------------"
-      echo "k8s => restarting nginx"
+      echo "k8s => starting worker: job:business-claim-requests"
       echo "-------------------------------"
-      sudo service nginx start
-      echo "k8s => starting NODE backend"
-      echo "-------------------------------"
-      tail -f /dev/null
+      node --import tsx src/modules/superadmin/platform/businesses/workers/claim-requests-bulk.worker.ts
 
   resources:
     requests:
@@ -78,7 +75,7 @@ backend:
       pvcName: "pvc-microservice-agent-portal"
       containerMountPath: "/agent-portal/backend/storage/logs/"
       subPath:
-        enabled: false      
+        enabled: false
         hostSubPath: "agent-portal-api/"
 
   affinity:
@@ -90,7 +87,7 @@ backend:
         weight: 50
 
   service:
-    enabled: true
+    enabled: false
     type: NodePort
     containerport: 80
     svcport: 80
@@ -120,7 +117,7 @@ backend:
     customHostname:
       enabled: false
       hosts:
-        - "api.staging.globalyapp.com"       
+        - "api.staging.globalyapp.com"
     httpMultipleRoute:
       paths:
         - /
@@ -131,7 +128,7 @@ backend:
     nodeSelector:
       enabled: false
       labelName: type
-      labelValue: default-server-worker      
+      labelValue: default-server-worker
     healthCheckPath: "/nginx-health"
     healthCheckProtocol: "HTTP"
     healthCheckPort: "80"
@@ -141,26 +138,3 @@ backend:
     unhealthyThresholdCount: 2
     matcher:
       httpCode: "200-399,401-404"
-  gcphttproute:
-    enabled: true
-    gateway:
-      name: "gcp-globalyapp-external-gw"
-      namespace: "gateways-globalyapp"
-      sectionName: ""
-    customHostname:
-      enabled: true
-      hosts:
-        - "api.globalyapp.com"
-    httpMultipleRoute:
-      paths:
-        - /
-    urlRewriteEnabled: false
-    weight: 1
-  gcpHealthcheck:
-    enabled: true
-    checkIntervalSec: 15
-    timeoutSec: 5
-    healthyThreshold: 2
-    unhealthyThreshold: 3
-    port: 80
-    requestPath: "/nginx-health"
