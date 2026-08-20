@@ -26,5 +26,5 @@ microservice:
     timeoutSec: 5
     healthyThreshold: 2
     unhealthyThreshold: 3
-    port: 80
+    port: 8080
     requestPath: "/"
