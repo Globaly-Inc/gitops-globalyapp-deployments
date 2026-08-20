@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: globalyapp-argocd-http-route
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-20"  # Installing before microservices start
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  project: default
+  sources:
+  - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
+    targetRevision: "live-values"
+    ref: values
+  - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
+    targetRevision: "infra"          # branch to deploy
+    path: "helm-charts/self-managed/gcp-elb-http-target" # path to the Helm chart
+    helm:
+      valueFiles:
+        - $values/gitops-values/staging/apps/third-party-services/public-http-traffic/argocd-http-route.yml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  ignoreDifferences:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    jsonPointers:
+    - /spec/parentRefs
+    - /status
+  - group: networking.gke.io
+    kind: HealthCheckPolicy
+    jsonPointers:
+    - /status
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - ServerSideApply=true
+      - PruneLast=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: -1            # ← unlimited retries
+      backoff:
+        duration: 30s      # ← base interval of 30 seconds
+        factor: 2
+        maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain

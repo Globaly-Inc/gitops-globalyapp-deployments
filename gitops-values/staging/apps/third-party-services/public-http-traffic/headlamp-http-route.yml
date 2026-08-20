@@ -1,0 +1,30 @@
+### Attaches a GCP HealthCheckPolicy + Gateway HTTPRoute to the already-running
+### headlamp Service (deployed by apps/staging/external-service/headlamp-application.yml)
+### so it's reachable through the shared gateway in apps/staging/public-traffic/gcp/gcp-gw-globalyos-parent.yml
+microservice:
+  name: headlamp #exact name of service
+  service:
+    svcport: 80
+  gcphttproute:
+    enabled: true
+    urlRewriteEnabled: false
+    gateway:
+      name: "gcp-globalyapp-external-gw"
+      namespace: "gateways-globalyapp"
+      sectionName: ""
+    customHostname:
+      enabled: true
+      hosts:
+        - "headlamp.staging.globalyapp.com"
+    httpMultipleRoute:
+      paths:
+        - "/"
+    weight: 1
+  gcpHealthcheck:
+    enabled: false
+    checkIntervalSec: 15
+    timeoutSec: 5
+    healthyThreshold: 2
+    unhealthyThreshold: 3
+    port: 80
+    requestPath: "/"
