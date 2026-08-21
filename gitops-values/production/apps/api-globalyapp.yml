@@ -120,7 +120,7 @@ backend:
     customHostname:
       enabled: false
       hosts:
-        - "api.staging.globalyapp.com"       
+        - "api.globalyapp.com"       
     httpMultipleRoute:
       paths:
         - /
