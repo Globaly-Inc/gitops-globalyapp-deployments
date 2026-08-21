@@ -1,6 +1,6 @@
 backend:
   name: scrapling-mcp
-  replicaCount: 1
+  replicaCount: 2
 
   image:
     repository: pyd4vinci/scrapling
