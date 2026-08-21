@@ -65,7 +65,7 @@ spec:
     ref: values
   - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
     path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
-    targetRevision: "staging"  # Latest chart version
+    targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
         - $values/gitops-values/staging/apps/workers/worker-extraction.yml
@@ -113,7 +113,7 @@ spec:
     ref: values
   - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
     path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
-    targetRevision: "staging"  # Latest chart version
+    targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
         - $values/gitops-values/staging/apps/workers/worker-extraction-pages.yml
@@ -161,7 +161,7 @@ spec:
     ref: values
   - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
     path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
-    targetRevision: "staging"  # Latest chart version
+    targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
         - $values/gitops-values/staging/apps/workers/worker-extraction-verify.yml
@@ -209,7 +209,7 @@ spec:
     ref: values
   - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
     path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
-    targetRevision: "staging"  # Latest chart version
+    targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
         - $values/gitops-values/staging/apps/workers/worker-extraction-step.yml
@@ -257,7 +257,7 @@ spec:
     ref: values
   - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
     path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
-    targetRevision: "staging"  # Latest chart version
+    targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
         - $values/gitops-values/staging/apps/workers/worker-extraction-schedule.yml
@@ -305,7 +305,7 @@ spec:
     ref: values
   - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
     path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
-    targetRevision: "staging"  # Latest chart version
+    targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
         - $values/gitops-values/staging/apps/workers/worker-business-claim-requests.yml
@@ -353,7 +353,7 @@ spec:
     ref: values
   - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
     path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
-    targetRevision: "staging"  # Latest chart version
+    targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
         - $values/gitops-values/staging/apps/workers/worker-import-v2.yml
@@ -401,7 +401,7 @@ spec:
     ref: values
   - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
     path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
-    targetRevision: "staging"  # Latest chart version
+    targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
         - $values/gitops-values/staging/apps/workers/worker-scholarship-import.yml
@@ -449,7 +449,7 @@ spec:
     ref: values
   - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
     path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
-    targetRevision: "staging"  # Latest chart version
+    targetRevision: "infra"  # Latest chart version
     helm:
       valueFiles:
         - $values/gitops-values/staging/apps/workers/worker-extraction-agentcis.yml
