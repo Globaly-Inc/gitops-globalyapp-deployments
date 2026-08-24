@@ -98,6 +98,10 @@ frontend:
     periodSeconds: 30
     failureThreshold: 10
 
+  pdb:
+    enabled: true
+    minAvailable: 1 
+    
   service:
     enabled: true
     type: NodePort
