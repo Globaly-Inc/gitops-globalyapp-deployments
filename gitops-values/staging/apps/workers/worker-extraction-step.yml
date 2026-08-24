@@ -8,7 +8,7 @@ backend:
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
-    enabled: true
+    enabled: false
     name: ecr-registry-secret
 
   securityContext:
