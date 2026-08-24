@@ -1,6 +1,6 @@
 frontend:
   name: fe-globaly-app
-  replicaCount: 1
+  replicaCount: 2
 
   image:
     repository: asia-south1-docker.pkg.dev/globalyapp-staging/globalyapp-v3/frontend
