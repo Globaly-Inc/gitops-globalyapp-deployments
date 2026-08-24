@@ -40,7 +40,10 @@ backend:
       echo "k8s => starting scrapling mcp server"
       echo "-------------------------------"
       export SCRAPLING_MCP_AUTH_TOKEN="f2geVI9OMbpt3V49"
-      exec uv run scrapling mcp --http --host 0.0.0.0 --port 8000 --allowed-host scrapling-mcp-svc.scrapling.svc.cluster.local:8000
+      exec uv run scrapling mcp --http --host 0.0.0.0 --port 8000
+      #exec uv run scrapling mcp --http --host 0.0.0.0 --port 8000 --allowed-host scrapling-mcp-svc.scrapling.svc.cluster.local:8000
+
+    
 
   resources:
     requests:
