@@ -32,7 +32,8 @@ backend:
       echo "-------------------------------"
       echo "k8s => starting worker: job:extraction"
       echo "-------------------------------"
-      node --import tsx src/modules/superadmin/data-extraction/workers/extraction-job.worker.ts
+      ##node --import tsx src/modules/superadmin/data-extraction/workers/extraction-job.worker.ts
+      npm run job:extraction
 
   resources:
     requests:
