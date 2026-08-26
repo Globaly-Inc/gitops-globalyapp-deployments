@@ -1,6 +1,6 @@
 backend:
   name: scrapling-mcp
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     repository: pyd4vinci/scrapling
@@ -126,8 +126,8 @@ backend:
   # Chart's HPA is CPU-only (no memory metric, fixed stabilization windows).
   hpa:
     enabled: true
-    minReplicas: 2
-    maxReplicas: 4
+    minReplicas: 1
+    maxReplicas: 1
     cpuUtilization: 70
     scaleUp:
       podsValue: 2
