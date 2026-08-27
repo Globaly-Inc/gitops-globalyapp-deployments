@@ -48,10 +48,10 @@ backend:
   resources:
     requests:
       cpu: "500m"
-      memory: "1Gi"
+      memory: "1.5Gi"
     limits:
-      cpu: "1500m"
-      memory: "2Gi"
+      cpu: "2500m"
+      memory: "6Gi"
 
   multiplePorts:
     enabled: false
