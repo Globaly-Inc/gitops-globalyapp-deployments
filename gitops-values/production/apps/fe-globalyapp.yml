@@ -172,6 +172,7 @@ frontend:
       enabled: true
       hosts:
         - "globalyapp.com"
+        - "www.globalyapp.com"
     httpMultipleRoute:
       paths:
         - /
