@@ -4,7 +4,7 @@ backend:
 
   image:
     repository: pyd4vinci/scrapling
-    tag: "latest"
+    tag: scrapling-mcp-08-27-eead9a5
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
