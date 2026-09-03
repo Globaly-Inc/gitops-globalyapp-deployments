@@ -4,7 +4,7 @@ backend:
 
   image:
     repository: asia-south1-docker.pkg.dev/globalyapp-staging/globalyapp-v3/scrapling-mcp
-    tag: scrapling-mcp-08-31-1736f6b
+    tag: scrapling-mcp-09-03-8653111
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
