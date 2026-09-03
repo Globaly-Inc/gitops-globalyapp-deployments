@@ -1,0 +1,199 @@
+backend:
+  name: scrapling-mcp
+  replicaCount: 1
+
+  image:
+    repository: asia-south1-docker.pkg.dev/globalyapp-staging/globalyapp-v3/scrapling-mcp
+    tag: scrapling-mcp-08-31-1736f6b
+    pullPolicy: IfNotPresent
+
+  imagePullSecrets:
+    enabled: false
+    name: ecr-registry-secret
+
+  securityContext:
+    enabled: true
+    runAsUser: 0
+    runAsGroup: 0
+    supplementalGroupsAndFsGroup:
+      enabled: false
+      supplementalGroups: [4000]
+      fsGroup: 2000
+
+  tolerations:
+    enabled: true
+    unreachableSeconds: 30
+    notReadySeconds: 30
+
+  workdir:
+    enabled: false
+    path: /tmp
+
+  # No secret manager wired up for this GCP cluster, so the token is exported
+  # here instead of an "env:" field. Replace with a real value, e.g.
+  # `openssl rand -hex 32` - this file is committed to git as plaintext.
+  startupCommand:
+    enabled: true
+    shell: /bin/sh
+    command: |
+      echo "-------------------------------"
+      echo "k8s => starting scrapling mcp server"
+      echo "-------------------------------"
+      export SCRAPLING_MCP_AUTH_TOKEN="f2geVI9OMbpt3V49"
+      exec uv run scrapling mcp --http --host 0.0.0.0 --port 8000
+      #exec uv run scrapling mcp --http --host 0.0.0.0 --port 8000 --allowed-host scrapling-mcp-svc.scrapling.svc.cluster.local:8000
+
+    
+
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1.5Gi"
+    limits:
+      cpu: "2500m"
+      memory: "6Gi"
+
+  multiplePorts:
+    enabled: false
+    ports:
+      - port: 8000
+        name: http
+
+  # tcpSocket probes from the raw manifest aren't supported by this chart
+  # (httpGet only) - left disabled rather than faking a health path.
+  livenessProbe:
+    enabled: false
+    httpGet:
+      path: /
+      port: 8000
+    initialDelaySeconds: 20
+    periodSeconds: 20
+    failureThreshold: 3
+
+  readinessProbe:
+    enabled: false
+    httpGet:
+      path: /
+      port: 8000
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    failureThreshold: 3
+
+  startupProbe:
+    enabled: false
+    httpGet:
+      path: /
+      port: 8000
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    failureThreshold: 3
+
+  volumes:
+    defaultpvc:
+      enabled: false
+      volumeName: "microservice-backend-consumer-env-volume"
+      pvcName: "nfs-data-import-config-pvc"
+      containerMountPath: "/app/.env"
+      subPath:
+        enabled: false
+        hostSubPath: "logs"
+    custompvc:
+      enabled: false
+      mounts: []
+
+  affinity:
+    enabled: false
+    preventpolicy:
+      enabled: false
+      key: type
+      values:
+        - cache-server-worker
+    preferredNodes:
+      - weight: 100
+        key: type
+        values:
+          - web-server-worker
+
+  service:
+    enabled: true
+    type: ClusterIP
+    containerport: 8000
+    svcport: 8000
+    multiplePorts:
+      enabled: false
+      ports: []
+
+  # Chart's HPA is CPU-only (no memory metric, fixed stabilization windows).
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 1
+    cpuUtilization: 70
+    scaleUp:
+      podsValue: 2
+    scaleDown:
+      podsValue: 1
+
+  ingress:
+    enabled: false
+    clusterIssuer: lets-encrypt
+    className: nginx
+    host: subash.globalyhub.com
+    path: /
+
+  httproute:
+    enabled: false
+    gateway:
+      name: "globalyapp-stage-alb-gateway"
+      namespace: "gateways-globalyapp"
+      sectionName: "https"
+    customHostname:
+      enabled: false
+      hosts:
+        - "scrapling.staging.globalyapp.com"
+    httpMultipleRoute:
+      paths:
+        - /
+    urlRewriteEnabled: false
+
+  targetGroupConfiguration:
+    enabled: false
+    targetType: "instance"
+    nodeSelector:
+      enabled: false
+      labelName: type
+      labelValue: default-server-worker
+    healthCheckPath: "/"
+    healthCheckProtocol: "HTTP"
+    healthCheckPort: "8000"
+    healthCheckInterval: 30
+    healthCheckTimeout: 4
+    healthyThresholdCount: 2
+    unhealthyThresholdCount: 2
+    matcher:
+      httpCode: "200-399,401-404"
+
+  gcphttproute:
+    enabled: false
+    gateway:
+      name: "gcp-globalyapp-external-gw"
+      namespace: "gateways-globalyapp"
+      sectionName: ""
+    customHostname:
+      enabled: false
+      hosts:
+        - "scrapling.staging.globalyapp.com"
+    httpMultipleRoute:
+      paths:
+        - /
+    urlRewriteEnabled: false
+    weight: 1
+
+  gcpHealthcheck:
+    enabled: false
+    checkIntervalSec: 15
+    timeoutSec: 5
+    healthyThreshold: 2
+    unhealthyThreshold: 3
+    port: 8000
+    requestPath: "/"
