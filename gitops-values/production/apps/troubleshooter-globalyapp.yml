@@ -4,7 +4,7 @@ backend:
 
   image:
     repository: asia-south1-docker.pkg.dev/globalyapp-production/globalyapp-v3/troubleshooter
-    tag: troubleshooter-08-13-f9b56fa
+    tag: troubleshooter-09-03-8653111
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
