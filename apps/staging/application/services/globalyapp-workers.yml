@@ -574,6 +574,198 @@ spec:
         factor: 2
         maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain
 
+########################## worker: job:blog-generate ################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: worker-blog-generate
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"  # Installing main backend first
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  project: default
+  sources:
+  - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
+    targetRevision: "live-values"
+    ref: values
+  - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
+    path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
+    targetRevision: "infra"  # Latest chart version
+    helm:
+      valueFiles:
+        - $values/gitops-values/staging/apps/workers/worker-blog-generate.yml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: globalyapp-worker
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - '.spec.template.spec.tolerations[] | select(.key == "kubernetes.io/arch" and .value == "amd64")'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - ServerSideApply=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: -1            # ← unlimited retries
+      backoff:
+        duration: 60s      # ← base interval of 30 seconds
+        factor: 2
+        maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain
+
+########################## worker: job:enquiry-email ################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: worker-enquiry-email
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"  # Installing main backend first
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  project: default
+  sources:
+  - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
+    targetRevision: "live-values"
+    ref: values
+  - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
+    path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
+    targetRevision: "infra"  # Latest chart version
+    helm:
+      valueFiles:
+        - $values/gitops-values/staging/apps/workers/worker-enquiry-email.yml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: globalyapp-worker
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - '.spec.template.spec.tolerations[] | select(.key == "kubernetes.io/arch" and .value == "amd64")'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - ServerSideApply=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: -1            # ← unlimited retries
+      backoff:
+        duration: 60s      # ← base interval of 30 seconds
+        factor: 2
+        maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain
+
+########################## worker: job:enquiry-match ################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: worker-enquiry-match
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"  # Installing main backend first
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  project: default
+  sources:
+  - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
+    targetRevision: "live-values"
+    ref: values
+  - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
+    path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
+    targetRevision: "infra"  # Latest chart version
+    helm:
+      valueFiles:
+        - $values/gitops-values/staging/apps/workers/worker-enquiry-match.yml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: globalyapp-worker
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - '.spec.template.spec.tolerations[] | select(.key == "kubernetes.io/arch" and .value == "amd64")'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - ServerSideApply=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: -1            # ← unlimited retries
+      backoff:
+        duration: 60s      # ← base interval of 30 seconds
+        factor: 2
+        maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain
+
+########################## worker: job:extraction-course-bulk-delete ################
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: worker-extraction-course-bulk-delete
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"  # Installing main backend first
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  project: default
+  sources:
+  - repoURL: https://github.com/Globaly-Inc/gitops-globalyapp-deployments.git
+    targetRevision: "live-values"
+    ref: values
+  - repoURL: "https://github.com/GlobalyHub/GH-infra-and-k8s-charts-central.git"
+    path: "helm-charts/self-managed/backend"  # Fixed: was kube-prometheus-stack
+    targetRevision: "infra"  # Latest chart version
+    helm:
+      valueFiles:
+        - $values/gitops-values/staging/apps/workers/worker-extraction-course-bulk-delete.yml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: globalyapp-worker
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - '.spec.template.spec.tolerations[] | select(.key == "kubernetes.io/arch" and .value == "amd64")'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - PruneLast=true
+      - ServerSideApply=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: -1            # ← unlimited retries
+      backoff:
+        duration: 60s      # ← base interval of 30 seconds
+        factor: 2
+        maxDuration: 10m   # ← raised ceiling to accommodate longer backoff chain
+
 ########################## worker: job:ai-knowledge-recrawl ################
 ---
 apiVersion: argoproj.io/v1alpha1
