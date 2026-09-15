@@ -4,7 +4,7 @@ backend:
 
   image:
     repository: asia-south1-docker.pkg.dev/globalyapp-staging/globalyapp-v3/backend
-    tag: backend-09-15-a005621
+    tag: backend-09-15-5b6c98c
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
