@@ -1,6 +1,6 @@
 frontend:
   name: globlay-ai-site
-  replicaCount: 3
+  replicaCount: 1
 
   image:
     repository: asia-south1-docker.pkg.dev/globalyapp-production/globalyapp-v3/globalyai-website
