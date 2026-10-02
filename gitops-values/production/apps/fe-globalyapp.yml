@@ -4,7 +4,7 @@ frontend:
 
   image:
     repository: asia-south1-docker.pkg.dev/globalyapp-production/globalyapp-v3/frontend
-    tag: frontend-09-17-a42973f
+    tag: frontend-10-02-e921089
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
