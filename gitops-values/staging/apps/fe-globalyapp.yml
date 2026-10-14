@@ -172,6 +172,7 @@ frontend:
       enabled: true
       hosts:
         - "staging.globalyapp.com"
+        - "app.globalyai.com"
     httpMultipleRoute:
       paths:
         - /

@@ -155,6 +155,7 @@ backend:
       enabled: true
       hosts:
         - "apistaging.globalyapp.com"
+        - "apistaging.globalyai.com"
     httpMultipleRoute:
       paths:
         - /
