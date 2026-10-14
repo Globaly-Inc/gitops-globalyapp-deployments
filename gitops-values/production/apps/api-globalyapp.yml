@@ -155,6 +155,7 @@ backend:
       enabled: true
       hosts:
         - "api.globalyapp.com"
+        - "api.globalyai.com"
     httpMultipleRoute:
       paths:
         - /
