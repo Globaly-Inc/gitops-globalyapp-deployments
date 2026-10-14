@@ -4,7 +4,7 @@ frontend:
 
   image:
     repository: asia-south1-docker.pkg.dev/globalyapp-production/globalyapp-v3/globalyai-website
-    tag: globalyai-website-09-25-6064885
+    tag: globalyai-website-10-14-cd27e4c
     pullPolicy: IfNotPresent
 
   imagePullSecrets:
